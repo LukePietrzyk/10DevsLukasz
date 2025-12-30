@@ -1,14 +1,10 @@
-Oto kompletny Dokument Wymagań Projektowych (PRD) dla projektu **10x-cards**, opracowany na podstawie przeprowadzonej analizy.
-
-***
-
 # Dokument Wymagań Produktu (PRD) – 10x-cards (MVP)
 
 | **Nazwa Projektu** | 10x-cards |
 | :--- | :--- |
 | **Wersja** | 1.0 (MVP Scope) |
 | **Status** | Do wdrożenia |
-| **Data** | 2026 |
+| **Data** | 2025 |
 
 ---
 
