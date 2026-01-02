@@ -122,21 +122,31 @@ MVP adresuje przede wszystkim:
 - Rejestracja konta:
   - Rejestracja przy użyciu adresu email i hasła.
   - Hasło musi spełniać minimalne wymagania (np. min. 8 znaków).
+  - Wymagane potwierdzenie hasła podczas rejestracji.
   - Brak obowiązkowej weryfikacji email w MVP (opcjonalnie, jeśli Supabase ułatwia wdrożenie).
+  - Rejestracja odbywa się na dedykowanej stronie.
 
 - Logowanie i wylogowanie:
-  - Logowanie email + hasło.
+  - Logowanie email + hasło na dedykowanej stronie logowania.
   - Bezpieczne sesje / tokeny (np. JWT zarządzane przez Supabase Auth).
   - Możliwość wylogowania z aplikacji (czyszczenie sesji).
+  - Przycisk logowania dostępny w prawym górnym rogu interfejsu.
+  - Przycisk wylogowania dostępny w prawym górnym rogu w głównym Layout.astro.
+  - Brak zewnętrznych serwisów logowania (np. Google, GitHub) w MVP.
 
 - Reset hasła:
-  - Funkcja „Zapomniałem hasła”.
+  - Funkcja „Zapomniałem hasła” dostępna na ekranie logowania.
   - Wysłanie maila z linkiem do ustawienia nowego hasła.
   - Formularz ustawienia nowego hasła z walidacją.
+  - Odzyskiwanie hasła powinno być możliwe.
 
 - Ustawienia konta:
   - Ekran pozwalający na zmianę hasła po zalogowaniu.
   - Usunięcie konta i wszystkich danych użytkownika (z potwierdzeniem).
+
+- Dostęp do funkcji bez logowania:
+  - Użytkownik MOŻE korzystać z tworzenia fiszek "ad-hoc" bez logowania się do systemu (funkcjonalność podstawowa dostępna dla wszystkich).
+  - Użytkownik NIE MOŻE korzystać z funkcji Kolekcji reguł bez logowania się do systemu (wymagana autentykacja).
 
 ### 3.2 Zarządzanie fiszkami (CRUD)
 
@@ -363,33 +373,63 @@ Kryteria akceptacji:
 - Po poprawnym logowaniu użytkownik zostaje przekierowany na dashboard/listę fiszek.
 - Sesja jest utrzymywana zgodnie z konfiguracją (np. do zamknięcia przeglądarki lub dłużej, w zależności od polityki).
 
-### US-003 Wylogowanie
+### US-003 Kolekcje reguł
 
 ID: US-003  
+Tytuł: Kolekcje reguł  
+Opis: Jako użytkownik chcę móc zapisywać i edytować zestawy reguł, aby szybko wykorzystywać sprawdzone rozwiązania w różnych projektach.
+
+Kryteria akceptacji:
+- Użytkownik może zapisać aktualny zestaw reguł (US-001) jako kolekcję (nazwa, opis, reguły).
+- Użytkownik może aktualizować kolekcję.
+- Użytkownik może usunąć kolekcję.
+- Użytkownik może przywrócić kolekcję do poprzedniej wersji (pending logchanges).
+- Funkcjonalność kolekcji nie jest dostępna bez logowania się do systemu (US-004).
+
+### US-004 Bezpieczny dostęp i uwierzytelnianie
+
+ID: US-004  
+Tytuł: Bezpieczny dostęp  
+Opis: Jako użytkownik chcę mieć możliwość rejestracji i logowania się do systemu w sposób zapewniający bezpieczeństwo moich danych.
+
+Kryteria akceptacji:
+- Logowanie i rejestracja odbywają się na dedykowanych stronach.
+- Logowanie wymaga podania adresu email i hasła.
+- Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
+- Użytkownik MOŻE korzystać z tworzenia reguł "ad-hoc" bez logowania się do systemu (US-001).
+- Użytkownik NIE MOŻE korzystać z funkcji Kolekcji bez logowania się do systemu (US-003).
+- Użytkownik może logować się do systemu poprzez przycisk w prawym górnym rogu.
+- Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu w głównym Layout.astro.
+- Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
+- Odzyskiwanie hasła powinno być możliwe.
+
+### US-005 Wylogowanie
+
+ID: US-005  
 Tytuł: Wylogowanie z aplikacji  
 Opis: Jako zalogowany użytkownik chcę móc się wylogować, aby nikt inny nie miał dostępu do moich danych na wspólnym urządzeniu.
 
 Kryteria akceptacji:
-- Z poziomu nawigacji dostępna jest akcja „Wyloguj”.
+- Z poziomu nawigacji dostępna jest akcja „Wyloguj".
 - Po wylogowaniu sesja jest unieważniana (tokeny usuwane).
 - Użytkownik jest przekierowany na stronę logowania lub ekran powitalny.
 
-### US-004 Reset hasła
+### US-006 Reset hasła
 
-ID: US-004  
+ID: US-006  
 Tytuł: Reset zapomnianego hasła  
 Opis: Jako użytkownik, który zapomniał hasła, chcę otrzymać mail z linkiem do ustawienia nowego hasła, aby odzyskać dostęp do konta.
 
 Kryteria akceptacji:
-- Na ekranie logowania dostępny jest link „Zapomniałem hasła”.
+- Na ekranie logowania dostępny jest link „Zapomniałem hasła".
 - Po podaniu zarejestrowanego emaila wysyłany jest mail z linkiem resetującym hasło.
 - Kliknięcie w link prowadzi do formularza ustawienia nowego hasła.
 - Ustawienie nowego hasła umożliwia ponowne zalogowanie się z użyciem nowego hasła.
 - Podanie nieistniejącego emaila nie ujawnia, czy konto istnieje (zachowanie neutralne).
 
-### US-005 Zmiana hasła
+### US-007 Zmiana hasła
 
-ID: US-005  
+ID: US-007  
 Tytuł: Zmiana hasła w ustawieniach konta  
 Opis: Jako zalogowany użytkownik chcę móc zmienić swoje hasło, aby zwiększyć bezpieczeństwo konta.
 
@@ -399,22 +439,22 @@ Kryteria akceptacji:
 - Podanie niepoprawnego aktualnego hasła skutkuje błędem.
 - Po poprawnej zmianie hasła kolejne logowania wymagają podania nowego hasła.
 
-### US-006 Usunięcie konta i danych
+### US-008 Usunięcie konta i danych
 
-ID: US-006  
+ID: US-008  
 Tytuł: Usunięcie konta  
 Opis: Jako zalogowany użytkownik chcę móc trwale usunąć swoje konto i wszystkie dane (fiszki, powtórki), aby mieć kontrolę nad swoją prywatnością.
 
 Kryteria akceptacji:
-- W ustawieniach konta dostępna jest opcja „Usuń konto”.
+- W ustawieniach konta dostępna jest opcja „Usuń konto".
 - Po jej wybraniu pojawia się modal z ostrzeżeniem o nieodwracalnym usunięciu.
-- Do potwierdzenia wymagane jest wpisanie określonego słowa (np. „USUŃ”) lub hasła.
+- Do potwierdzenia wymagane jest wpisanie określonego słowa (np. „USUŃ") lub hasła.
 - Po potwierdzeniu konto i wszystkie powiązane dane są trwale usuwane.
 - Po usunięciu użytkownik nie może się już zalogować przy użyciu starego konta.
 
-### US-007 Przeglądanie listy fiszek
+### US-009 Przeglądanie listy fiszek
 
-ID: US-007  
+ID: US-009  
 Tytuł: Przeglądanie własnych fiszek  
 Opis: Jako zalogowany użytkownik chcę widzieć listę wszystkich moich fiszek, aby móc je przeglądać i zarządzać nimi.
 
@@ -424,70 +464,70 @@ Kryteria akceptacji:
 - Lista jest paginowana (50 fiszek na stronę), z przyciskami do przechodzenia między stronami.
 - Brak fiszek wyświetla ekran pustego stanu z zachętą do dodania pierwszej fiszki.
 
-### US-008 Wyszukiwanie fiszek po treści
+### US-010 Wyszukiwanie fiszek po treści
 
-ID: US-008  
+ID: US-010  
 Tytuł: Wyszukiwanie fiszek  
 Opis: Jako użytkownik z większą liczbą fiszek chcę móc wyszukać fiszki po tekście front lub back, aby szybko znaleźć interesującą mnie kartę.
 
 Kryteria akceptacji:
-- Na liście fiszek dostępne jest pole „Szukaj”.
+- Na liście fiszek dostępne jest pole „Szukaj".
 - Wpisanie frazy filtruje listę fiszek po dopasowaniu do front lub back.
 - Wyczyśczenie pola wyszukiwania przywraca pełną listę (z paginacją).
 - Wyszukiwanie działa w akceptowalnym czasie dla typowej liczby fiszek (np. do 2000).
 
-### US-009 Dodanie nowej fiszki ręcznie
+### US-011 Dodanie nowej fiszki ręcznie
 
-ID: US-009  
+ID: US-011  
 Tytuł: Ręczne tworzenie fiszki  
 Opis: Jako użytkownik chcę łatwo dodać nową fiszkę z pytaniem i odpowiedzią, aby budować swój zestaw do nauki.
 
 Kryteria akceptacji:
-- Na liście fiszek dostępny jest przycisk „Dodaj fiszkę”.
+- Na liście fiszek dostępny jest przycisk „Dodaj fiszkę".
 - Kliknięcie otwiera formularz z polami front, back oraz opcjonalnie subject.
 - Próba zapisu z pustym front lub back zwraca czytelny komunikat walidacyjny.
 - Poprawny zapis tworzy nową fiszkę przypisaną do aktualnego użytkownika, z ustawionym nextReviewAt.
-- Po zapisie użytkownik może wybrać „Zapisz i dodaj kolejną” lub „Zapisz i wróć do listy”.
+- Po zapisie użytkownik może wybrać „Zapisz i dodaj kolejną" lub „Zapisz i wróć do listy".
 
-### US-010 Edycja istniejącej fiszki
+### US-012 Edycja istniejącej fiszki
 
-ID: US-010  
+ID: US-012  
 Tytuł: Edycja fiszki  
 Opis: Jako użytkownik chcę móc zmodyfikować treść istniejącej fiszki, aby poprawić błędy lub doprecyzować pytanie/odpowiedź.
 
 Kryteria akceptacji:
-- Z listy fiszek dostępna jest akcja „Edytuj” dla każdej fiszki.
+- Z listy fiszek dostępna jest akcja „Edytuj" dla każdej fiszki.
 - Formularz edycji wyświetla aktualny front, back, subject.
 - Zastosowane są te same walidacje co przy tworzeniu (brak pustych pól, limity długości).
 - Po zapisie zmiany są widoczne na liście fiszek i w przyszłych powtórkach.
 
-### US-011 Usunięcie fiszki
+### US-013 Usunięcie fiszki
 
-ID: US-011  
+ID: US-013  
 Tytuł: Usunięcie fiszki  
 Opis: Jako użytkownik chcę móc usunąć niepotrzebną lub błędną fiszkę, aby utrzymać porządek w swoim zbiorze.
 
 Kryteria akceptacji:
-- Z listy fiszek dostępna jest akcja „Usuń” dla każdej fiszki.
+- Z listy fiszek dostępna jest akcja „Usuń" dla każdej fiszki.
 - Po kliknięciu pojawia się modal potwierdzający zamiar usunięcia.
-- Wybranie opcji „Usuń” usuwa fiszkę trwale z bazy.
+- Wybranie opcji „Usuń" usuwa fiszkę trwale z bazy.
 - Usunięta fiszka nie pojawia się więcej na liście ani w powtórkach.
 
-### US-012 Przegląd fiszek do powtórki na dziś
+### US-014 Przegląd fiszek do powtórki na dziś
 
-ID: US-012  
+ID: US-014  
 Tytuł: Lista powtórek na dziś  
 Opis: Jako użytkownik chcę mieć osobny ekran pokazujący fiszki, które powinienem dziś powtórzyć, aby mieć jasny plan nauki.
 
 Kryteria akceptacji:
-- Z nawigacji dostępny jest link do ekranu „Powtórki na dziś”.
+- Z nawigacji dostępny jest link do ekranu „Powtórki na dziś".
 - Ekran pobiera z bazy fiszki, dla których nextReviewAt ≤ dziś (wg czasu serwera).
 - Jeśli liczba fiszek przekracza 100, wyświetlane jest maksymalnie 100 na daną sesję.
 - Gdy nie ma fiszek do powtórki, wyświetlany jest pusty stan z odpowiednim komunikatem i linkiem do dodania fiszek.
 
-### US-013 Powtarzanie pojedynczej fiszki
+### US-015 Powtarzanie pojedynczej fiszki
 
-ID: US-013  
+ID: US-015  
 Tytuł: Powtórka pojedynczej fiszki  
 Opis: Jako użytkownik chcę w sesji powtórek widzieć najpierw pytanie, a dopiero po kliknięciu odpowiedź, aby móc sprawdzić swoją wiedzę.
 
@@ -496,9 +536,9 @@ Kryteria akceptacji:
 - Kliknięcie przycisku lub naciśnięcie klawisza (np. Space) odsłania back (odpowiedź).
 - Do momentu odsłonięcia odpowiedzi nie są widoczne przyciski oceny trudności lub są nieaktywne.
 
-### US-014 Ocenianie trudności fiszki i planowanie powtórki
+### US-016 Ocenianie trudności fiszki i planowanie powtórki
 
-ID: US-014  
+ID: US-016  
 Tytuł: Ocenianie trudności odpowiedzi  
 Opis: Jako użytkownik chcę po odsłonięciu odpowiedzi oznaczyć, czy dana fiszka była dla mnie trudna, średnia czy łatwa, aby system dobrał kolejną datę powtórki.
 
@@ -510,9 +550,9 @@ Kryteria akceptacji:
   - przechodzi automatycznie do kolejnej fiszki w sesji.
 - Błędne zapisanie aktualizacji (np. błąd serwera) skutkuje komunikatem błędu i umożliwia ponowienie próby.
 
-### US-015 Informacja o postępie w sesji powtórek
+### US-017 Informacja o postępie w sesji powtórek
 
-ID: US-015  
+ID: US-017  
 Tytuł: Licznik powtórek w sesji  
 Opis: Jako użytkownik chcę podczas sesji widzieć, ile fiszek już powtórzyłem, a ile zostało, aby mieć poczucie postępu.
 
@@ -523,9 +563,9 @@ Kryteria akceptacji:
 - Licznik aktualizuje się po każdej ocenionej fiszce.
 - Po zakończeniu sesji (X = Y) wyświetla się komunikat o ukończeniu powtórek na dziś.
 
-### US-016 Obsługa błędów przy zapisie fiszki
+### US-018 Obsługa błędów przy zapisie fiszki
 
-ID: US-016  
+ID: US-018  
 Tytuł: Bezpieczny zapis fiszek przy błędach sieci  
 Opis: Jako użytkownik chcę, aby przy problemach z połączeniem czy serwerem moje wpisane dane nie znikały, abym nie musiał wszystkiego wprowadzać ponownie.
 
@@ -534,9 +574,9 @@ Kryteria akceptacji:
 - Dane wpisane w formularz pozostają w polach po wystąpieniu błędu.
 - Użytkownik może ponowić próbę zapisu jednym kliknięciem.
 
-### US-017 Obsługa braku internetu podczas pracy
+### US-019 Obsługa braku internetu podczas pracy
 
-ID: US-017  
+ID: US-019  
 Tytuł: Informowanie o trybie offline  
 Opis: Jako użytkownik chcę zostać poinformowany, gdy stracę połączenie z internetem podczas pracy z aplikacją, aby zrozumieć, czemu zapisy nie działają.
 
@@ -545,26 +585,26 @@ Kryteria akceptacji:
 - Podczas braku połączenia blokowane są akcje wymagające komunikacji z serwerem (z czytelnym komunikatem).
 - Po odzyskaniu połączenia komunikat znika lub jest aktualizowany, a operacje mogą być ponawiane.
 
-### US-018 Przegląd i edycja ustawień konta
+### US-020 Przegląd i edycja ustawień konta
 
-ID: US-018  
+ID: US-020  
 Tytuł: Ustawienia konta  
 Opis: Jako zalogowany użytkownik chcę mieć ekran ustawień konta, na którym mogę zmienić hasło i ewentualnie usunąć konto.
 
 Kryteria akceptacji:
-- Ekran ustawień zawiera sekcję zmiany hasła (US-005) i sekcję usunięcia konta (US-006).
+- Ekran ustawień zawiera sekcję zmiany hasła (US-007) i sekcję usunięcia konta (US-008).
 - Dane dostępowe (email) są wyświetlane w formie tylko do odczytu (bez zmiany w MVP).
 - Próby wejścia na ekran ustawień bez zalogowania przekierowują na ekran logowania.
 
-### US-019 Przegląd FAQ i zgłoszenie feedbacku
+### US-021 Przegląd FAQ i zgłoszenie feedbacku
 
-ID: US-019  
+ID: US-021  
 Tytuł: FAQ i kontakt  
 Opis: Jako użytkownik chcę mieć możliwość szybkiego sprawdzenia odpowiedzi na podstawowe pytania oraz zgłoszenia błędu lub sugestii, aby w razie problemów nie blokować się na dalszej nauce.
 
 Kryteria akceptacji:
-- Dostępna jest sekcja „Pomoc”/„FAQ” z kilkoma najczęstszymi pytaniami (np. jak dodać fiszkę, jak działa powtórka).
-- Na tej samej stronie lub w widocznym miejscu znajduje się link „Zgłoś błąd/feedback”.
+- Dostępna jest sekcja „Pomoc"/„FAQ" z kilkoma najczęstszymi pytaniami (np. jak dodać fiszkę, jak działa powtórka).
+- Na tej samej stronie lub w widocznym miejscu znajduje się link „Zgłoś błąd/feedback".
 - Link prowadzi do otwarcia klienta mailowego lub prostego formularza kontaktowego kierującego zgłoszenie na skonfigurowany adres email.
 
 ## 6. Metryki sukcesu

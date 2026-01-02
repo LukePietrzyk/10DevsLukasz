@@ -138,3 +138,14 @@ export interface FlashcardProposalDto {
   source?: FlashcardSource;
   generationId?: string | null;
 }
+
+// Generation types
+export interface GenerateRequestDto {
+  sourceText: string;
+  max: number; // 1-20
+  subject?: string;
+}
+
+export interface GenerateResponseDto {
+  proposals: FlashcardProposalDto[]; // <= max
+}

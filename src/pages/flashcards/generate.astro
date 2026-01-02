@@ -1,0 +1,10 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import GenerateLayout from "../../components/generate/GenerateLayout";
+
+export const prerender = false;
+---
+
+<Layout title="Generowanie fiszek - FlashCards">
+  <GenerateLayout client:load />
+</Layout>
