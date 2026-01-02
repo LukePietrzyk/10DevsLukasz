@@ -2,7 +2,17 @@
 
 ## 1. Przegląd
 
-Niniejsza specyfikacja opisuje architekturę modułu rejestracji, logowania, wylogowania i odzyskiwania hasła użytkowników zgodnie z wymaganiami US-003 (Kolekcje reguł) i US-004 (Bezpieczny dostęp i uwierzytelnianie) z dokumentu PRD.
+Niniejsza specyfikacja opisuje architekturę modułu rejestracji, logowania, wylogowania i odzyskiwania hasła użytkowników zgodnie z wymaganiami z dokumentu PRD:
+
+- **US-001**: Rejestracja konta
+- **US-002**: Logowanie do aplikacji
+- **US-003**: Kolekcje reguł (wymagają autentykacji)
+- **US-004**: Bezpieczny dostęp i uwierzytelnianie
+- **US-005**: Wylogowanie z aplikacji
+- **US-006**: Reset zapomnianego hasła
+- **US-007**: Zmiana hasła w ustawieniach konta
+- **US-008**: Usunięcie konta i danych
+- **US-020**: Przegląd i edycja ustawień konta
 
 ### 1.1 Zakres funkcjonalny
 
@@ -13,9 +23,9 @@ Moduł autentykacji obejmuje:
 - Reset hasła (zapomniałem hasła)
 - Ustawienie nowego hasła po resetowaniu
 - Zmianę hasła w ustawieniach konta
-- Usunięcie konta (wymagane w PRD, ale poza bezpośrednim zakresem modułu auth)
+- Usunięcie konta (US-008 - wymagane w PRD, wymaga endpointu API)
 - Ochronę funkcji wymagających autentykacji (Kolekcje reguł)
-- Umożliwienie korzystania z funkcji podstawowych bez logowania (reguły ad-hoc)
+- Umożliwienie korzystania z funkcji podstawowych bez logowania (fiszki ad-hoc)
 
 ### 1.2 Założenia techniczne
 
@@ -120,7 +130,7 @@ Moduł autentykacji obejmuje:
 - `/` - Strona główna
 - `/auth/*` - Wszystkie strony autentykacji
 - `/flashcards/generate` - Generowanie fiszek (jeśli dostępne bez logowania)
-- Funkcje "ad-hoc" (reguły bez zapisywania)
+- Tworzenie fiszek "ad-hoc" (fiszki bez zapisywania w bazie, możliwość zapisania po zalogowaniu)
 
 ### 2.2 Komponenty React (Client-side)
 
@@ -189,6 +199,24 @@ Moduł autentykacji obejmuje:
 - **Obsługa błędów**:
   - "Token wygasł lub jest nieprawidłowy"
   - "Hasło musi mieć co najmniej 8 znaków"
+
+**`src/components/auth/ChangePasswordForm.tsx`** (wymaga utworzenia, dla US-007)
+- **Funkcjonalność**:
+  - Formularz zmiany hasła w ustawieniach konta
+  - Pola: currentPassword, newPassword, confirmPassword
+  - Przycisk "Zmień hasło"
+  - Toggle widoczności haseł
+- **Integracja**:
+  - `useAuthStore.updatePassword(newPassword)` (po weryfikacji aktualnego hasła)
+  - Wymaga weryfikacji aktualnego hasła przed zmianą
+- **Walidacja**:
+  - CurrentPassword: wymagany
+  - NewPassword: min. 8 znaków
+  - ConfirmPassword: zgodność z newPassword
+- **Obsługa błędów**:
+  - "Aktualne hasło jest nieprawidłowe"
+  - "Nowe hasło musi mieć co najmniej 8 znaków"
+  - "Hasła muszą być identyczne"
 
 #### 2.2.2 Komponenty nawigacji
 
@@ -279,7 +307,7 @@ Moduł autentykacji obejmuje:
    - Użytkownik nie jest automatycznie logowany
 7. Jeśli email nie wymaga potwierdzenia (lub jest już potwierdzony):
    - Automatyczne logowanie
-   - Przekierowanie na `/` (dashboard)
+   - Przekierowanie na `/` (dashboard/listę fiszek)
 
 #### 2.4.2 Logowanie
 
@@ -290,7 +318,7 @@ Moduł autentykacji obejmuje:
 5. Supabase weryfikuje dane i zwraca sesję (JWT)
 6. Jeśli sukces:
    - Zapisanie sesji w `useAuthStore`
-   - Przekierowanie na `/` (lub `redirect` query param jeśli istnieje)
+   - Przekierowanie na `/` (dashboard/listę fiszek) lub `redirect` query param jeśli istnieje
 7. Jeśli błąd:
    - Wyświetlenie komunikatu błędu (bez ujawniania szczegółów)
    - Formularz pozostaje wypełniony (opcjonalnie)
@@ -408,9 +436,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
 2. **Zarządzania sesjami** (opcjonalnie)
 3. **Usuwania konta** (wymaga server-side operacji)
 
-#### 3.2.1 Endpoint usuwania konta (przyszłość)
+#### 3.2.1 Endpoint usuwania konta (US-008)
 
-**`src/pages/api/auth/delete-account.ts`** (opcjonalny, dla US-008)
+**`src/pages/api/auth/delete-account.ts`** (wymagany dla US-008)
 - **Metoda**: DELETE
 - **Autentykacja**: Wymagana (JWT token)
 - **Funkcjonalność**:
@@ -596,10 +624,11 @@ export async function getServerSession(request: Request): Promise<Session | null
 
 #### 5.1.1 Fiszki (Flashcards)
 
-**Dostęp bez logowania** (zgodnie z PRD):
-- Użytkownik może tworzyć fiszki "ad-hoc" bez logowania
-- Fiszki nie są zapisywane w bazie (lub są zapisywane jako tymczasowe)
-- Po zalogowaniu: możliwość zapisania fiszek do konta
+**Dostęp bez logowania** (zgodnie z PRD, sekcja 3.1):
+- Użytkownik może tworzyć fiszki "ad-hoc" bez logowania (funkcjonalność podstawowa dostępna dla wszystkich)
+- Fiszki ad-hoc nie są zapisywane w bazie (lub są zapisywane jako tymczasowe w localStorage/sessionStorage)
+- Po zalogowaniu: możliwość zapisania fiszek ad-hoc do konta (migracja z localStorage do bazy)
+- **Uwaga**: W US-004 PRD jest błędna referencja do "reguł ad-hoc (US-001)" - w rzeczywistości chodzi o "fiszki ad-hoc" zgodnie z sekcją 3.1 PRD
 
 **Dostęp z logowaniem**:
 - Fiszki są przypisane do `user_id`
@@ -609,14 +638,16 @@ export async function getServerSession(request: Request): Promise<Session | null
 #### 5.1.2 Kolekcje reguł (US-003)
 
 **Wymagana autentykacja**:
-- Funkcjonalność kolekcji jest dostępna TYLKO dla zalogowanych użytkowników
-- Middleware przekierowuje na `/auth/login` jeśli brak autentykacji
+- Funkcjonalność kolekcji jest dostępna TYLKO dla zalogowanych użytkowników (US-004, kryterium akceptacji)
+- Middleware przekierowuje na `/auth/login?redirect=/collections` jeśli brak autentykacji
 - Komponenty React sprawdzają `useAuthStore.user` przed renderowaniem
 
 **Implementacja**:
 - Strona `/collections` wymaga autentykacji (middleware)
 - Komponenty kolekcji używają `context.locals.userId` do zapytań do API
 - RLS w Supabase zapewnia dostęp tylko do własnych kolekcji
+
+**Uwaga**: W US-003 PRD jest błędna referencja do "zestawu reguł (US-001)" - US-001 to rejestracja konta. Prawdopodobnie chodzi o aktualny zestaw reguł używany w aplikacji (nie związany z US-001).
 
 ### 5.2 Aktualizacja istniejących komponentów
 
@@ -653,14 +684,17 @@ const user = Astro.locals.user;
 ### 5.3 Nowe pliki i moduły
 
 **Nowe pliki do utworzenia**:
-1. `src/components/auth/LoginForm.tsx`
-2. `src/components/auth/ForgotForm.tsx`
-3. `src/components/auth/ResetForm.tsx`
-4. `src/components/navigation/Header.astro`
-5. `src/components/navigation/AuthButton.tsx` (opcjonalnie)
-6. `src/components/auth/AuthGuard.astro`
-7. `src/lib/validations/auth.schemas.ts`
-8. `src/layouts/AuthLayout.astro` (opcjonalnie)
+1. `src/components/auth/LoginForm.tsx` (US-002)
+2. `src/components/auth/ForgotForm.tsx` (US-006)
+3. `src/components/auth/ResetForm.tsx` (US-006)
+4. `src/components/auth/ChangePasswordForm.tsx` (US-007)
+5. `src/components/navigation/Header.astro` (US-004, US-005)
+6. `src/components/navigation/AuthButton.tsx` (opcjonalnie, US-004, US-005)
+7. `src/components/auth/AuthGuard.astro` (US-003, US-004)
+8. `src/lib/validations/auth.schemas.ts` (wszystkie formularze)
+9. `src/layouts/AuthLayout.astro` (opcjonalnie)
+10. `src/pages/settings/index.astro` (US-007, US-008) - strona ustawień konta
+11. `src/pages/api/auth/delete-account.ts` (US-008) - endpoint usuwania konta
 
 **Pliki do modyfikacji**:
 1. `src/middleware/index.ts` - rozbudowa o autentykację
@@ -696,9 +730,21 @@ const user = Astro.locals.user;
 - ✅ Ustawienie nowego hasła z nieprawidłowym tokenem (błąd)
 
 #### 6.1.4 Ochrona dostępu
-- ✅ Dostęp do `/collections` bez logowania (przekierowanie)
+- ✅ Dostęp do `/collections` bez logowania (przekierowanie na `/auth/login?redirect=/collections`)
 - ✅ Dostęp do `/collections` z logowaniem (sukces)
-- ✅ Przekierowanie po zalogowaniu na oryginalną ścieżkę
+- ✅ Przekierowanie po zalogowaniu na oryginalną ścieżkę (z query param `redirect`)
+
+#### 6.1.5 Zmiana hasła (US-007)
+- ✅ Zmiana hasła z poprawnym aktualnym hasłem
+- ✅ Zmiana hasła z nieprawidłowym aktualnym hasłem (błąd)
+- ✅ Zmiana hasła z hasłem < 8 znaków (walidacja)
+- ✅ Zmiana hasła z niezgodnymi hasłami (walidacja)
+
+#### 6.1.6 Usunięcie konta (US-008)
+- ✅ Usunięcie konta z potwierdzeniem (wpisanie "USUŃ" lub hasła)
+- ✅ Anulowanie usunięcia konta
+- ✅ Weryfikacja, że konto zostało trwale usunięte
+- ✅ Weryfikacja, że nie można się zalogować po usunięciu konta
 
 ### 6.2 Testy jednostkowe
 
@@ -762,25 +808,27 @@ const user = Astro.locals.user;
 
 ### 8.1 Priorytety implementacji
 
-**Faza 1 - Podstawowa autentykacja**:
+**Faza 1 - Podstawowa autentykacja (US-001, US-002, US-004, US-005, US-006)**:
 1. Rozbudowa middleware o pobieranie sesji
-2. Utworzenie `LoginForm.tsx`
-3. Utworzenie `ForgotForm.tsx`
-4. Utworzenie `ResetForm.tsx`
-5. Rozbudowa `Layout.astro` o nawigację
-6. Testy podstawowych przepływów
+2. Utworzenie `LoginForm.tsx` (US-002)
+3. Utworzenie `ForgotForm.tsx` (US-006)
+4. Utworzenie `ResetForm.tsx` (US-006)
+5. Rozbudowa `Layout.astro` o nawigację z przyciskami logowania/wylogowania (US-004, US-005)
+6. Testy podstawowych przepływów (rejestracja, logowanie, reset hasła, wylogowanie)
 
-**Faza 2 - Ochrona dostępu**:
+**Faza 2 - Ochrona dostępu (US-003, US-004)**:
 1. Implementacja ochrony ścieżek w middleware
 2. Utworzenie `AuthGuard.astro`
-3. Integracja z funkcją Kolekcji reguł
+3. Ochrona strony `/collections` (Kolekcje reguł - US-003)
 4. Testy ochrony dostępu
 
-**Faza 3 - Ulepszenia**:
-1. Ustawienia konta (zmiana hasła, usunięcie konta)
-2. Menu użytkownika
-3. Ulepszenia UX (loading states, animacje)
-4. Testy E2E
+**Faza 3 - Ustawienia konta (US-007, US-008, US-020)**:
+1. Utworzenie strony `/settings` (US-020)
+2. Utworzenie `ChangePasswordForm.tsx` (US-007)
+3. Utworzenie endpointu `/api/auth/delete-account.ts` (US-008)
+4. Implementacja usuwania konta z potwierdzeniem (US-008)
+5. Menu użytkownika w headerze
+6. Testy E2E (pełny przepływ: rejestracja → logowanie → zmiana hasła → usunięcie konta)
 
 ### 8.2 Zależności
 
@@ -797,14 +845,32 @@ const user = Astro.locals.user;
 ### 8.3 Uwagi końcowe
 
 - Wszystkie operacje autentykacji są wykonywane przez Supabase Auth SDK
-- Brak potrzeby tworzenia własnych endpointów API dla podstawowych operacji
+- Brak potrzeby tworzenia własnych endpointów API dla podstawowych operacji (rejestracja, logowanie, reset hasła)
+- **Wyjątek**: Endpoint `/api/auth/delete-account.ts` jest wymagany dla US-008 (usunięcie konta wymaga server-side operacji)
 - Middleware zapewnia server-side ochronę tras
 - Client-side state management przez Zustand dla interaktywnych komponentów
 - Kompatybilność z istniejącym kodem (fiszki, kolekcje) przez `context.locals.userId`
+- **Fiszki ad-hoc**: Użytkownicy mogą tworzyć fiszki bez logowania (zgodnie z PRD sekcja 3.1), z możliwością zapisania po zalogowaniu
+- **Kolekcje reguł**: Wymagają autentykacji (US-003, US-004) - middleware chroni trasę `/collections`
+
+### 8.4 Znane niespójności w PRD
+
+W dokumencie PRD znaleziono następujące niespójności, które zostały wyjaśnione w niniejszej specyfikacji:
+
+1. **US-004, linia 399**: Mówi o "regułach ad-hoc (US-001)", ale:
+   - US-001 to "Rejestracja konta", nie reguły
+   - W sekcji 3.1 PRD (linia 148) jest mowa o "fiszkach ad-hoc"
+   - **Rozwiązanie**: W specyfikacji przyjęto, że chodzi o "fiszki ad-hoc" zgodnie z sekcją 3.1
+
+2. **US-003, linia 383**: Mówi o "zestawie reguł (US-001)", ale US-001 to rejestracja
+   - **Rozwiązanie**: Przyjęto, że chodzi o aktualny zestaw reguł używany w aplikacji (nie związany z US-001)
+
+3. **Dashboard vs lista fiszek**: PRD używa obu terminów zamiennie (np. US-002: "dashboard/listę fiszek")
+   - **Rozwiązanie**: W specyfikacji przyjęto, że `/` to dashboard/listę fiszek (dla zalogowanych użytkowników)
 
 ---
 
 **Data utworzenia**: 2025-01-XX  
-**Wersja**: 1.0  
+**Wersja**: 1.1 (zaktualizowano po porównaniu z PRD)  
 **Autor**: AI Assistant
 
