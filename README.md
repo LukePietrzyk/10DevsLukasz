@@ -1,94 +1,114 @@
-# 10x Astro Starter
+# Flashcards
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+A minimalistic web application for creating and reviewing flashcards with a simple spaced-repetition flow.
+
+> MVP target delivery: 22 Jan 2026
+
+## Table of Contents
+
+1. [Tech Stack](#tech-stack)  
+2. [Getting Started Locally](#getting-started-locally)  
+3. [Available Scripts](#available-scripts)  
+4. [Project Scope](#project-scope)  
+5. [Project Status](#project-status)  
+6. [License](#license)
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+**Frontend**  
+- Astro 5  
+- React 19  
+- TypeScript 5  
+- Tailwind CSS 4  
+- shadcn/ui component library
 
-## Prerequisites
+**Backend / Infrastructure**  
+- Supabase (PostgreSQL ✚ Auth)  
+- CI/CD – GitHub Actions  
+- Docker image deployed to DigitalOcean
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+**Tooling & Quality**  
+- ESLint + Prettier  
+- Husky + lint-staged  
+- Unit tests (tsx / logic) & one E2E smoke test
 
-## Getting Started
+## Getting Started Locally
 
-1. Clone the repository:
+### Prerequisites
+* Node.js 22.14.0 (see `.nvmrc`)
+* npm ≥ 10 (bundled with Node) or pnpm
+
+### Clone & Install
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
-
-2. Install dependencies:
-
-```bash
+git clone https://github.com/<your-org>/flashcards.git
+cd flashcards
 npm install
 ```
 
-3. Run the development server:
+### Environment variables
+Create a `.env.local` file and provide your Supabase credentials:
 
 ```bash
+SUPABASE_URL=<your-supabase-instance-url>
+SUPABASE_ANON_KEY=<your-anon-key>
+```
+
+### Run the app
+
+```bash
+# start dev server with hot-reload
 npm run dev
 ```
 
-4. Build for production:
+Open http://localhost:4321 in your browser.
+
+### Build & preview production
 
 ```bash
-npm run build
+npm run build     # generates static output
+npm run preview   # serves the build locally
 ```
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+| Script            | Description                          |
+|-------------------|--------------------------------------|
+| `dev`             | Start development server             |
+| `build`           | Produce production build             |
+| `preview`         | Preview the production build locally |
+| `lint`            | Run ESLint over the codebase         |
+| `lint:fix`        | Run ESLint with `--fix`              |
+| `format`          | Format files with Prettier           |
 
-## Project Structure
+All scripts are defined in `package.json`.
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+### In scope (MVP)
+- Account management: sign-up, login, logout, password reset, delete account  
+- Manual CRUD for flashcards (front / back / subject)  
+- List with search & pagination  
+- Daily review screen with difficulty grading (hard / medium / easy)  
+- Basic progress counter for today’s reviews  
+- Minimal settings & FAQ/help pages  
+- Basic analytics events  
+- Security & privacy fundamentals
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+### Out of scope (post-MVP roadmap)
+- AI-assisted flashcard generation  
+- Advanced spaced-repetition algorithm (e.g. SuperMemo)  
+- Sharing decks, import/export, mobile apps, notifications, advanced stats, full i18n
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+See [`./.ai/prd.md`](./.ai/prd.md) for the full product requirements document.
 
-### Cursor IDE
+## Project Status
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+![GitHub last commit](https://img.shields.io/github/last-commit/<your-org>/flashcards?style=flat-square)
+![GitHub issues](https://img.shields.io/github/issues/<your-org>/flashcards?style=flat-square)
 
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+MVP is **in active development** – v0.1 expected by **22 Jan 2026**.
 
 ## License
 
-MIT
+MIT © 2026
