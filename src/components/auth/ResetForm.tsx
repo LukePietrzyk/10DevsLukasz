@@ -64,7 +64,7 @@ export default function ResetForm() {
 
   if (tokenError) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-white border-[#E2E8F0] shadow-lg">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Błąd</CardTitle>
           <CardDescription className="text-center">{tokenError}</CardDescription>
@@ -86,7 +86,7 @@ export default function ResetForm() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-white border-[#E2E8F0] shadow-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center">Ustaw nowe hasło</CardTitle>
         <CardDescription className="text-center">Wprowadź nowe hasło dla swojego konta</CardDescription>
@@ -162,7 +162,7 @@ export default function ResetForm() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-white" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Ustaw nowe hasło
             </Button>

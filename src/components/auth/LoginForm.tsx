@@ -33,7 +33,7 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-white border-[#E2E8F0] shadow-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center">Zaloguj się</CardTitle>
         <CardDescription className="text-center">Wprowadź swoje dane, aby zalogować się do konta</CardDescription>
@@ -75,7 +75,7 @@ export default function LoginForm() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-white" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Zaloguj się
             </Button>
