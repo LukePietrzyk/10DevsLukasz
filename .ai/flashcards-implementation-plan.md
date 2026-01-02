@@ -312,12 +312,6 @@ API Route → Middleware (Auth) → Service Layer → Database Layer
    - PATCH partial update
    - DELETE card
 
-### 9.4 Testing & Validation
-9. **Unit tests** dla service layer
-10. **Integration tests** dla API endpoints
-11. **Performance testing** batch operations
-12. **Security testing** authorization & validation
-
 ### 9.5 Monitoring & Documentation
 13. **Error monitoring** setup
 14. **API documentation** (OpenAPI spec)

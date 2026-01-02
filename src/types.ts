@@ -25,7 +25,7 @@ export interface PaginatedResponseDto<T> {
   totalPages: number;
 }
 
-import type { Tables, Enums } from "./db/database.types";
+// import type { Tables, Enums } from "./db/database.types";
 
 export type FlashcardSource = "manual" | "ai-full" | "ai-edited";
 
@@ -100,10 +100,41 @@ export interface SubmitAnswerResponse {
   remaining: number;
 }
 
+// Query parameters for GET /api/flashcards
+export interface FlashcardQueryDto extends PaginationQueryDto {
+  search?: string;
+  subject?: string;
+  sort?: "created_at" | "next_review_at";
+  order?: "asc" | "desc";
+}
+
+// Update operations for PUT/PATCH /api/flashcards/{id}
+export interface UpdateFlashcardDto {
+  front?: string;
+  back?: string;
+  subject?: string;
+  source?: FlashcardSource;
+  generationId?: string;
+}
+
+// Review session creation for POST /api/review-sessions
+export interface CreateReviewSessionDto {
+  limit?: number;
+}
+
+// RFC 7807 Problem Details for API errors
+export interface ApiErrorResponse {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance: string;
+}
+
 export interface FlashcardProposalDto {
   front: string;
   back: string;
   subject?: string;
-  source?: "ai-full";
+  source?: FlashcardSource;
   generationId?: string | null;
 }
