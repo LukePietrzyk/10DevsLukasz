@@ -1,12 +1,19 @@
 ---
 import "../styles/global.css";
+import Header from "../components/navigation/Header.astro";
+import AuthInitializer from "../components/auth/AuthInitializer";
 
 interface Props {
   title?: string;
   lang?: string;
 }
 
-const { title = "10x Astro Starter", lang = "en" } = Astro.props;
+const { title = "Flashcards", lang = "pl" } = Astro.props;
+
+// Get user from middleware (server-side verification)
+// This ensures server-side authentication state is available throughout the app
+const user = Astro.locals.user;
+const isAuthenticated = Astro.locals.isAuthenticated;
 ---
 
 <!doctype html>
@@ -19,7 +26,12 @@ const { title = "10x Astro Starter", lang = "en" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    {/* Initialize client-side auth store on mount */}
+    <AuthInitializer client:load />
+    <Header user={user} />
+    <main>
+      <slot />
+    </main>
   </body>
 </html>
 

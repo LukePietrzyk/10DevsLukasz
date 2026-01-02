@@ -8,7 +8,7 @@ interface AuthState {
   error: string | null;
 
   // Actions
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, redirectTo?: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loading: false,
   error: null,
 
-  login: async (email: string, password: string) => {
+  login: async (email: string, password: string, redirectTo?: string) => {
     set({ loading: true, error: null });
 
     try {
@@ -37,8 +37,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       set({ user: data.user, loading: false });
 
-      // Redirect to flashcards list
-      window.location.href = "/flashcards";
+      // Determine redirect destination
+      // Default to flashcards list page if no redirect specified
+      const destination = redirectTo || "/flashcards";
+
+      // Server-side redirect by reloading the page
+      // This ensures middleware runs and user state is properly set
+      window.location.href = destination;
     } catch (error) {
       const authError = error as AuthError;
       set({

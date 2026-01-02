@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,20 @@ import { z } from "zod";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginForm() {
+interface LoginFormProps {
+  redirectTo?: string;
+}
+
+export default function LoginForm({ redirectTo }: LoginFormProps) {
   const { login, loading, error, clearError } = useAuthStore();
+
+  // Get redirect from URL query params if not provided as prop
+  const redirect = useMemo(() => {
+    if (redirectTo) return redirectTo;
+    if (typeof window === "undefined") return undefined;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("redirect") || undefined;
+  }, [redirectTo]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -26,7 +38,7 @@ export default function LoginForm() {
   const onSubmit = async (values: LoginFormValues) => {
     clearError();
     try {
-      await login(values.email, values.password);
+      await login(values.email, values.password, redirect);
     } catch {
       // Error is handled by the store
     }
