@@ -17,53 +17,76 @@ _MVP exposes only bolded resources in the PRD (Auth, Flashcards, Review Sessions
 
 ## 2. Endpoints
 
-### 2.1 Authentication
-
-| Method | Path | Description | Auth Required |
-|--------|------|-------------|---------------|
-| POST | `/api/auth/register` | Create account (email + password) | No |
-| POST | `/api/auth/login` | Obtain JWT access & refresh tokens | No |
-| POST | `/api/auth/logout` | Invalidate refresh token | Yes |
-| POST | `/api/auth/password/reset/request` | Send reset-password email | No |
-| POST | `/api/auth/password/reset/confirm` | Set new password with reset token | No |
-| POST | `/api/auth/password/change` | Change password (current+new) | Yes |
-| DELETE | `/api/auth/account` | **Hard-delete account & all data** | Yes |
-
-All endpoints proxy to Supabase Auth SDK; application layer adds rate-limiting (90 req/min IP) and audit logging.
 
 ### 2.2 Flashcards
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/flashcards` | List cards (pagination, search, subject filter, sorting) |
-| POST | `/api/flashcards` | Create card |
+| POST | `/api/flashcards` | Create single card |
+| POST | `/api/flashcards/batch` | Create multiple cards (max 50 per request) |
 | GET | `/api/flashcards/{id}` | Get single card |
 | PUT | `/api/flashcards/{id}` | Replace card |
 | PATCH | `/api/flashcards/{id}` | Partial update (front, back, subject) |
 | DELETE | `/api/flashcards/{id}` | Permanently delete card |
 
 Query Parameters for list:
-- `page` (default 1), `pageSize` (default 50, max 50 desktop / 25 mobile)
+- `page` (default 1)
+- `pageSize` (default 50, max 50 desktop / 25 mobile)
+- `limit` – maximum number of flashcards to return (alternative to pagination, mutually exclusive with `page`/`pageSize`)
 - `search` – full-text substring across `front` & `back`
 - `subject` – exact match
-- `sort` – `created_at`, `next_review_at` (default `created_at desc`)
+- `sort` – field to sort by: `created_at`, `next_review_at` (default: `created_at`)
+- `order` – sort direction: `asc` or `desc` (default: `desc`)
 
-#### Create / Update Request Body
+#### Create / Update Request Body (Single Card)
 ```json
 {
   "front": "What is a closure?",
   "back": "A function having access to the parent scope...",
-  "subject": "JavaScript" // optional
+  "subject": "JavaScript", // optional
+  "source": "manual", // optional: "manual" | "ai-full" | "ai-edited"
+  "generationId": "uuid" // optional: required for ai-full and ai-edited sources
 }
 ```
 
-#### Response (single)
+#### Batch Create Request Body
+```json
+{
+  "flashcards": [
+    {
+      "front": "What is a closure?",
+      "back": "A function having access to the parent scope...",
+      "subject": "JavaScript",
+      "source": "ai-full",
+      "generationId": "uuid-123"
+    },
+    {
+      "front": "What is hoisting?",
+      "back": "JavaScript's behavior of moving declarations to the top...",
+      "subject": "JavaScript",
+      "source": "ai-full",
+      "generationId": "uuid-123"
+    }
+  ]
+}
+```
+
+Constraints for batch operations:
+- Maximum 50 cards per batch request
+- Each card follows same validation rules as single create
+- Total cards across all user's flashcards still limited to 2000
+- Atomic operation: either all cards are created or none (transaction)
+
+#### Response (Single Card)
 ```json
 {
   "id": "<uuid>",
   "front": "...",
   "back": "...",
   "subject": "JavaScript",
+  "source": "manual",
+  "generationId": null,
   "nextReviewAt": "2026-01-02",
   "lastReviewAt": null,
   "reviewCount": 0,
@@ -73,15 +96,76 @@ Query Parameters for list:
 }
 ```
 
+#### Response (Batch Create)
+```json
+{
+  "created": 2,
+  "flashcards": [
+    {
+      "id": "<uuid1>",
+      "front": "What is a closure?",
+      "back": "A function having access to the parent scope...",
+      "subject": "JavaScript",
+      "source": "ai-full",
+      "generationId": "uuid-123",
+      "nextReviewAt": "2026-01-02",
+      "lastReviewAt": null,
+      "reviewCount": 0,
+      "easeFactor": 2.5,
+      "createdAt": "2026-01-02T10:00:00Z",
+      "updatedAt": "2026-01-02T10:00:00Z"
+    },
+    {
+      "id": "<uuid2>",
+      "front": "What is hoisting?",
+      "back": "JavaScript's behavior of moving declarations to the top...",
+      "subject": "JavaScript",
+      "source": "ai-full",
+      "generationId": "uuid-123",
+      "nextReviewAt": "2026-01-02",
+      "lastReviewAt": null,
+      "reviewCount": 0,
+      "easeFactor": 2.5,
+      "createdAt": "2026-01-02T10:00:00Z",
+      "updatedAt": "2026-01-02T10:00:00Z"
+    }
+  ]
+}
+```
+
 Success codes: `200 OK`, `201 Created`, `204 No Content` (delete)
 
 Error codes:
-- `400 Bad Request` – validation failed
+- `400 Bad Request` – validation failed (single card), invalid batch format, or invalid source/generationId combination
 - `403 Forbidden` – not owner
 - `404 Not Found`
-- `409 Conflict` – card limit exceeded ( >2000 )
+- `409 Conflict` – card limit exceeded (>2000) or batch would exceed limit
+- `413 Payload Too Large` – batch exceeds 50 cards
+- `422 Unprocessable Entity` – partial batch validation failures (with details)
 - `429 Too Many Requests` – rate-limit
 - `500 Internal Server Error`
+
+#### Batch Error Response (422)
+```json
+{
+  "type": "validation_error",
+  "title": "Batch validation failed",
+  "status": 422,
+  "detail": "Some flashcards in the batch failed validation",
+  "errors": [
+    {
+      "index": 0,
+      "field": "front",
+      "message": "Front text is required"
+    },
+    {
+      "index": 2,
+      "field": "back",
+      "message": "Back text exceeds 300 characters"
+    }
+  ]
+}
+```
 
 ### 2.3 Review Workflow
 
@@ -161,6 +245,7 @@ _Not in MVP UI but trivial CRUD supplied for future-proofing._
 4. **Rate Limiting**
    - Auth endpoints: 5 req/min IP
    - Write endpoints: 60 req/min user
+   - Batch endpoints: 10 req/min user (each batch counts as 1 request regardless of size)
    - Read endpoints: 120 req/min user
 
 ## 4. Validation & Business Logic
@@ -169,7 +254,11 @@ _Not in MVP UI but trivial CRUD supplied for future-proofing._
 - `front` required, 1-120 chars plain text  *(DB `varchar(120)`)*
 - `back` required, 1-300 chars plain text  *(DB `varchar(300)`)*
 - `subject` optional, ≤40 chars  *(partial index on `subject`)*
+- `source` optional, must be one of `"manual"`, `"ai-full"`, or `"ai-edited"` (defaults to `"manual"`)
+- `generationId` required for `"ai-full"` and `"ai-edited"` sources, must be null for `"manual"` source
 - Max 2 000 cards / user (`flashcards_limit` trigger). API returns **409 Conflict**.
+- **Batch operations:** Max 50 cards per request, atomic transaction (all-or-nothing)
+- **Batch validation:** Each card validated individually; partial failures return `422` with error details
 
 ### 4.2 Review Logic
 | Difficulty | Next Interval | DB Update |
@@ -188,18 +277,12 @@ All changes executed atomically in PostgreSQL function `answer_flashcard(...)` (
 - JSON problem-details format (`application/problem+json`).
 - Error payload: `type`, `title`, `status`, `detail`, `instance`.
 
-### 4.5 Security & Performance
-- CORS restricted to frontend origin.
-- Pagination default 50 items; server-side upper-cap 100.
-- Index usage:
-  - `idx_flashcards_user_next` accelerates today reviews list.
-  - FTS GIN index (`idx_flashcards_fts`) serves `search` parameter.
-  - `idx_review_history_user_time` for user history analytics.
-- All write endpoints idempotent via request UUID header (optional); duplicates return `201` w/ same body.
 
 ## 5. Open Questions & Assumptions
 1. Email verification skipped for MVP; register endpoint still returns verification email if Supabase config enabled.
 2. `files` upload/download postponed; endpoints not included.
 3. Analytics events sent async to `/api/events` internal bus; not exposed publicly.
 4. Future AI endpoints will extend under `/api/ai/...`.
+5. **Batch operations:** AI-generated flashcards will use `/api/flashcards/batch` endpoint with appropriate rate limiting and validation.
+6. **Transaction handling:** Batch creates are atomic - if any card fails validation or would exceed user limits, entire batch is rejected.
 

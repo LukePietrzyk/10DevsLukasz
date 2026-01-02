@@ -19,8 +19,8 @@
 |               | last_review_at | `timestamp with time zone` |  |  |
 |               | review_count | `integer` | NOT NULL | `0` |
 |               | ease_factor | `numeric(4,2)` | NOT NULL | `2.50` |
-|               | source | `text` | CHECK (`source IN ('manual','ai')`) | `'manual'` |
-|               | ai_batch_id | `uuid` | FK → `ai_batches(id)`, NULLABLE |  |
+|               | source | `text` | CHECK (`source IN ('manual','ai-full','ai-edited')`) | `'manual'` |
+|               | generation_id | `uuid` | FK → `ai_batches(id)`, NULLABLE |  |
 |               | created_at | `timestamp with time zone` | NOT NULL | `now()` |
 |               | updated_at | `timestamp with time zone` | NOT NULL | `now()` |
 |               | version | `integer` | NOT NULL | `1` |
@@ -111,7 +111,7 @@
 - `users` 1 — N `review_sessions`
 - `review_sessions` 1 — N `review_history`
 - `flashcards` N — N `users` via `flashcard_favourites`
-- `ai_batches` 1 — N `flashcards` (optional, Phase 2)
+- `ai_batches` 1 — N `flashcards` via `generation_id` (optional, Phase 2)
 
 ## 3. Indexes
 1. `flashcards`  
