@@ -2,7 +2,7 @@
 
 A minimalistic web application for creating and reviewing flashcards with a simple spaced-repetition flow.
 
-> MVP target delivery: 22 Jan 2026
+
 
 ## Table of Contents
 
