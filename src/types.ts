@@ -1,4 +1,31 @@
 // Shared types for backend and frontend (Entities, DTOs)
+// Generic pagination DTOs are defined at the top so they can be reused by all resources.
+
+/**
+ * Common pagination query parameters accepted by list endpoints.
+ * - `page` & `pageSize` are traditional paged navigation (1-based).
+ * - `limit` is a convenience alternative (mutually exclusive with page/pageSize).
+ */
+export interface PaginationQueryDto {
+  page?: number;
+  pageSize?: number;
+  /** Maximum number of items to return – ignored if page is supplied */
+  limit?: number;
+}
+
+/**
+ * Standard paginated response wrapper.
+ * `data` holds the actual items; the rest is meta-information.
+ */
+export interface PaginatedResponseDto<T> {
+  data: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+import type { Tables, Enums } from "./db/database.types";
 
 export type FlashcardSource = "manual" | "ai-full" | "ai-edited";
 
@@ -9,6 +36,8 @@ export interface CreateFlashcardDto {
   source?: FlashcardSource;
   generationId?: string;
 }
+
+// --- Flashcards ------------------------------------------------------------
 
 export interface BatchCreateFlashcardsDto {
   flashcards: CreateFlashcardDto[];
@@ -28,6 +57,8 @@ export interface FlashcardEntity {
   createdAt: string;
   updatedAt: string;
 }
+
+export type FlashcardsListResponse = PaginatedResponseDto<FlashcardEntity>;
 
 export interface BatchCreateResponse {
   created: number;
@@ -67,4 +98,12 @@ export interface ReviewSessionEntity {
 export interface SubmitAnswerResponse {
   nextReviewAt: string;
   remaining: number;
+}
+
+export interface FlashcardProposalDto {
+  front: string;
+  back: string;
+  subject?: string;
+  source?: "ai-full";
+  generationId?: string | null;
 }
