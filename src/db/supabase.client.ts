@@ -10,6 +10,9 @@ const supabaseAnonKey =
 
 export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
+// Alias for client-side usage (compatibility with existing code)
+export const supabase = supabaseClient;
+
 // Type definition for our Supabase client
 export type SupabaseClient = BaseSupabaseClient<Database>;
 

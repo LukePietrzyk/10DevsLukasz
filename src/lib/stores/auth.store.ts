@@ -37,8 +37,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       set({ user: data.user, loading: false });
 
-      // Redirect to dashboard
-      window.location.href = "/";
+      // Redirect to flashcards list
+      window.location.href = "/flashcards";
     } catch (error) {
       const authError = error as AuthError;
       set({
@@ -68,7 +68,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (!data.user?.email_confirmed_at) {
         set({ error: "Sprawdź swoją skrzynkę e-mail i potwierdź konto." });
       } else {
-        window.location.href = "/";
+        window.location.href = "/flashcards";
       }
     } catch (error) {
       const authError = error as AuthError;
@@ -140,7 +140,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       set({ loading: false });
-      window.location.href = "/";
+      window.location.href = "/flashcards";
     } catch (error) {
       const authError = error as AuthError;
       set({

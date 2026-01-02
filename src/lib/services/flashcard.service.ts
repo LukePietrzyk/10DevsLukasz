@@ -117,8 +117,9 @@ export class FlashcardService {
     // Check user's flashcard limit (max 2000)
     await this.checkFlashcardLimit();
 
-    // Generate content hash for duplicate detection
-    const contentHash = this.generateContentHash(flashcardData.front, flashcardData.back);
+    // Format date as YYYY-MM-DD for date column (not timestamp)
+    const today = new Date();
+    const dateString = today.toISOString().split("T")[0];
 
     const insertData: FlashcardInsert = {
       user_id: this.userId,
@@ -128,7 +129,7 @@ export class FlashcardService {
       source: flashcardData.source || "manual",
       generation_id: flashcardData.generationId || null,
       // Default spaced repetition values
-      next_review_at: new Date().toISOString(),
+      next_review_at: dateString,
       ease_factor: 2.5,
       review_count: 0,
     };
@@ -136,10 +137,21 @@ export class FlashcardService {
     const { data, error } = await this.supabase.from("flashcards").insert(insertData).select().single();
 
     if (error) {
+      console.error("Supabase error creating flashcard:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        insertData,
+      });
+
       if (error.code === "23505") {
         throw new Error("Flashcard with this content already exists");
       }
-      throw new Error(`Failed to create flashcard: ${error.message}`);
+
+      // Provide more detailed error message
+      const errorMessage = error.details ? `${error.message}. Details: ${error.details}` : error.message;
+      throw new Error(`Failed to create flashcard: ${errorMessage}`);
     }
 
     return this.mapRowToEntity(data);
@@ -160,10 +172,11 @@ export class FlashcardService {
     // Check user's flashcard limit (max 2000)
     await this.checkFlashcardLimit(flashcardsData.length);
 
-    const insertData: FlashcardInsert[] = flashcardsData.map((flashcard) => {
-      // Generate content hash for each flashcard
-      const contentHash = this.generateContentHash(flashcard.front, flashcard.back);
+    // Format date as YYYY-MM-DD for date column (not timestamp)
+    const today = new Date();
+    const dateString = today.toISOString().split("T")[0];
 
+    const insertData: FlashcardInsert[] = flashcardsData.map((flashcard) => {
       return {
         user_id: this.userId,
         front: flashcard.front,
@@ -172,7 +185,7 @@ export class FlashcardService {
         source: flashcard.source || "manual",
         generation_id: flashcard.generationId || null,
         // Default spaced repetition values
-        next_review_at: new Date().toISOString(),
+        next_review_at: dateString,
         ease_factor: 2.5,
         review_count: 0,
       };

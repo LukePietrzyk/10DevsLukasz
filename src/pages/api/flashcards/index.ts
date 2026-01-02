@@ -81,6 +81,16 @@ export const GET: APIRoute = async ({ locals, url }) => {
  */
 export const POST: APIRoute = async ({ locals, request }) => {
   try {
+    // Validate userId is available
+    if (!locals.userId) {
+      return locals.createErrorResponse(
+        401,
+        "unauthorized",
+        "Unauthorized",
+        "User authentication required. Please log in to create flashcards."
+      );
+    }
+
     const flashcardService = new FlashcardService(locals.supabase, locals.userId);
 
     // Parse request body
@@ -118,6 +128,13 @@ export const POST: APIRoute = async ({ locals, request }) => {
   } catch (error) {
     console.error("Error creating flashcard:", error);
 
+    // Log full error details for debugging
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
+
     // Handle specific business logic errors
     if (error instanceof Error) {
       if (error.message.includes("limit exceeded")) {
@@ -127,6 +144,14 @@ export const POST: APIRoute = async ({ locals, request }) => {
       if (error.message.includes("already exists")) {
         return locals.createErrorResponse(409, "duplicate_flashcard", "Duplicate Flashcard", error.message);
       }
+
+      // Include error message in response for debugging (in development)
+      const isDevelopment = import.meta.env.DEV;
+      const errorDetail = isDevelopment
+        ? `${error.message}${error.stack ? `\n\nStack: ${error.stack}` : ""}`
+        : "An unexpected error occurred while creating the flashcard";
+
+      return locals.createErrorResponse(500, "internal_server_error", "Internal Server Error", errorDetail);
     }
 
     return locals.createErrorResponse(

@@ -8,7 +8,12 @@ export const CreateFlashcardSchema = z
   .object({
     front: z.string().min(1, "Front text is required").max(2000, "Front text cannot exceed 2000 characters").trim(),
     back: z.string().min(1, "Back text is required").max(2000, "Back text cannot exceed 2000 characters").trim(),
-    subject: z.string().max(100, "Subject cannot exceed 100 characters").trim().optional(),
+    subject: z
+      .string()
+      .max(100, "Subject cannot exceed 100 characters")
+      .trim()
+      .transform((val) => (val === "" ? undefined : val))
+      .optional(),
     source: flashcardSourceSchema.default("manual"),
     generationId: z.string().uuid("Generation ID must be a valid UUID").optional().nullable(),
   })
