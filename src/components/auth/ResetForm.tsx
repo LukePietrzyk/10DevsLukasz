@@ -1,74 +1,110 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useAuthStore } from "@/lib/stores/auth.store";
-import { registerSchema } from "@/lib/validations/auth.schemas";
+import { resetPasswordSchema } from "@/lib/validations/auth.schemas";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { z } from "zod";
+import { supabaseClient } from "@/db/supabase.client";
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+type ResetFormValues = z.infer<typeof resetPasswordSchema>;
 
-export default function RegisterForm() {
-  const { register: registerUser, loading, error, clearError } = useAuthStore();
+export default function ResetForm() {
+  const { updatePassword, loading, error, clearError } = useAuthStore();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirm, setShowConfirm] = React.useState(false);
+  const [tokenError, setTokenError] = React.useState<string | null>(null);
 
-  const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<ResetFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: "",
       password: "",
       confirm: "",
     },
   });
 
-  const onSubmit = async (values: RegisterFormValues) => {
+  React.useEffect(() => {
+    // Check if there's a recovery token in the URL hash
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get("access_token");
+    const type = hashParams.get("type");
+
+    if (!accessToken || type !== "recovery") {
+      setTokenError("Link jest nieprawidłowy lub wygasł. Poproś o nowy link resetujący hasło.");
+      return;
+    }
+
+    // Supabase will automatically handle the token from the hash fragment
+    // Verify the session with Supabase
+    supabaseClient.auth
+      .getSession()
+      .then(({ data, error }: { data: { session: unknown }; error: unknown }) => {
+        if (error || !data.session) {
+          setTokenError("Link jest nieprawidłowy lub wygasł. Poproś o nowy link resetujący hasło.");
+        }
+      })
+      .catch(() => {
+        setTokenError("Link jest nieprawidłowy lub wygasł. Poproś o nowy link resetujący hasło.");
+      });
+  }, []);
+
+  const onSubmit = async (values: ResetFormValues) => {
     clearError();
+    setTokenError(null);
     try {
-      await registerUser(values.email, values.password);
+      await updatePassword(values.password);
     } catch {
       // Error is handled by the store
     }
   };
 
+  if (tokenError) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Błąd</CardTitle>
+          <CardDescription className="text-center">{tokenError}</CardDescription>
+        </CardHeader>
+        <CardFooter className="flex flex-col space-y-2">
+          <div className="text-sm text-muted-foreground text-center">
+            <a href="/auth/forgot" className="text-primary hover:underline">
+              Poproś o nowy link
+            </a>
+          </div>
+          <div className="text-sm text-muted-foreground text-center">
+            <a href="/auth/login" className="text-primary hover:underline">
+              Powrót do logowania
+            </a>
+          </div>
+        </CardFooter>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Utwórz konto</CardTitle>
-        <CardDescription className="text-center">Wprowadź swoje dane, aby utworzyć nowe konto</CardDescription>
+        <CardTitle className="text-2xl text-center">Ustaw nowe hasło</CardTitle>
+        <CardDescription className="text-center">Wprowadź nowe hasło dla swojego konta</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>E-mail</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="twoj@email.com" {...field} disabled={loading} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Hasło</FormLabel>
+                  <FormLabel>Nowe hasło</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Wprowadź hasło"
+                        placeholder="Wprowadź nowe hasło"
                         {...field}
                         disabled={loading}
                       />
@@ -99,7 +135,7 @@ export default function RegisterForm() {
                     <div className="relative">
                       <Input
                         type={showConfirm ? "text" : "password"}
-                        placeholder="Potwierdź hasło"
+                        placeholder="Potwierdź nowe hasło"
                         {...field}
                         disabled={loading}
                       />
@@ -128,16 +164,15 @@ export default function RegisterForm() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Utwórz konto
+              Ustaw nowe hasło
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
         <div className="text-sm text-muted-foreground text-center">
-          Masz już konto?{" "}
           <a href="/auth/login" className="text-primary hover:underline">
-            Zaloguj się
+            Powrót do logowania
           </a>
         </div>
       </CardFooter>
