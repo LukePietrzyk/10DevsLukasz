@@ -34,7 +34,7 @@ export interface CreateFlashcardDto {
   back: string;
   subject?: string;
   source?: FlashcardSource;
-  generationId?: string;
+  generationId?: string | null;
 }
 
 // --- Flashcards ------------------------------------------------------------
