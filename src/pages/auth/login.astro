@@ -1,36 +1,17 @@
 ---
+import Layout from "../../layouts/Layout.astro";
+import LoginForm from "../../components/auth/LoginForm";
 export const prerender = false;
 ---
 
-<html lang="pl">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Logowanie - Flashcards</title>
-  </head>
-  <body>
-    <div id="app">
-      <div class="min-h-screen bg-background flex items-center justify-center p-4">
-        <div class="w-full max-w-md">
-          <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold">Flashcards</h1>
-            <p class="text-muted-foreground mt-2">Zaloguj się do swojego konta</p>
-          </div>
-          <div id="login-form"></div>
-        </div>
+<Layout title="Logowanie - Flashcards" lang="pl">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold">Flashcards</h1>
+        <p class="text-muted-foreground mt-2">Zaloguj się do swojego konta</p>
       </div>
+      <LoginForm client:load />
     </div>
-
-    <script>
-      import LoginForm from "../../components/auth/LoginForm";
-      import { createRoot } from "react-dom/client";
-
-      const container = document.getElementById("login-form");
-      if (container) {
-        const root = createRoot(container);
-        root.render(LoginForm());
-      }
-    </script>
-  </body>
-</html>
+  </div>
+</Layout>

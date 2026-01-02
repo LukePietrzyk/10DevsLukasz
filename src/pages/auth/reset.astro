@@ -1,36 +1,17 @@
 ---
+import Layout from "../../layouts/Layout.astro";
+import ResetForm from "../../components/auth/ResetForm";
 export const prerender = false;
 ---
 
-<html lang="pl">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nowe hasło - Flashcards</title>
-  </head>
-  <body>
-    <div id="app">
-      <div class="min-h-screen bg-background flex items-center justify-center p-4">
-        <div class="w-full max-w-md">
-          <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold">Flashcards</h1>
-            <p class="text-muted-foreground mt-2">Ustaw nowe hasło</p>
-          </div>
-          <div id="reset-form"></div>
-        </div>
+<Layout title="Nowe hasło - Flashcards" lang="pl">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold">Flashcards</h1>
+        <p class="text-muted-foreground mt-2">Ustaw nowe hasło</p>
       </div>
+      <ResetForm client:load />
     </div>
-
-    <script>
-      import ResetForm from "../../components/auth/ResetForm";
-      import { createRoot } from "react-dom/client";
-
-      const container = document.getElementById("reset-form");
-      if (container) {
-        const root = createRoot(container);
-        root.render(ResetForm());
-      }
-    </script>
-  </body>
-</html>
+  </div>
+</Layout>

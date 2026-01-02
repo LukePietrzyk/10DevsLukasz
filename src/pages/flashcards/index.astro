@@ -1,0 +1,11 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { FlashcardListProvider } from "../../components/flashcards/FlashcardListProvider";
+
+export const prerender = false;
+---
+
+<Layout title="Lista fiszek - Flashcards">
+  <FlashcardListProvider client:load />
+</Layout>
+
