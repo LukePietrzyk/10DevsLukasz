@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FlashcardEntity, FlashcardQueryDto, FlashcardsListResponse, ApiErrorResponse } from "@/types";
 import { useFlashcardQueryParams } from "@/components/hooks/useFlashcardQueryParams";
 import { useFlashcardMutations } from "@/components/hooks/useFlashcardMutations";
@@ -10,6 +10,7 @@ import { FlashcardListContent } from "./FlashcardListContent";
 import { Pagination } from "./Pagination";
 import { FlashcardForm } from "./FlashcardForm";
 import { DeleteFlashcardDialog } from "./DeleteFlashcardDialog";
+import FlashcardStudyModal from "./FlashcardStudyModal";
 import { toast } from "sonner";
 
 // Query function for fetching flashcards
@@ -19,10 +20,14 @@ async function fetchFlashcards(queryParams: FlashcardQueryDto): Promise<Flashcar
   if (queryParams.pageSize) params.set("pageSize", queryParams.pageSize.toString());
   if (queryParams.search) params.set("search", queryParams.search);
   if (queryParams.subject) params.set("subject", queryParams.subject);
-  if (queryParams.sort) params.set("sort", queryParams.sort);
-  if (queryParams.order) params.set("order", queryParams.order);
+  // No sort/order params - backend uses defaults (created_at desc - newest first)
 
-  const response = await fetch(`/api/flashcards?${params.toString()}`);
+  // Add cache-busting timestamp to ensure fresh data
+  params.set("_t", Date.now().toString());
+
+  const response = await fetch(`/api/flashcards?${params.toString()}`, {
+    cache: "no-store", // Disable HTTP cache
+  });
   if (!response.ok) {
     const error: ApiErrorResponse = await response.json();
     throw error;
@@ -33,7 +38,8 @@ async function fetchFlashcards(queryParams: FlashcardQueryDto): Promise<Flashcar
 export function FlashcardList() {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { queryParams, updateQueryParams } = useFlashcardQueryParams();
-  const { createMutation, updateMutation, deleteMutation } = useFlashcardMutations();
+  const { deleteMutation } = useFlashcardMutations();
+  const queryClient = useQueryClient();
 
   // Local state
   const [searchQuery, setSearchQuery] = useState(queryParams.search || "");
@@ -42,6 +48,8 @@ export function FlashcardList() {
   const [editingFlashcardId, setEditingFlashcardId] = useState<string | null>(null);
   const [deletingFlashcardId, setDeletingFlashcardId] = useState<string | null>(null);
   const [deletingFlashcardFront, setDeletingFlashcardFront] = useState<string | undefined>(undefined);
+  const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);
+  const [studyIndex, setStudyIndex] = useState(0);
 
   // Debounce search query
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -57,23 +65,40 @@ export function FlashcardList() {
   }, [queryParams.search]);
 
   // React Query for fetching flashcards
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["flashcards", queryParams],
     queryFn: () => fetchFlashcards(queryParams),
-    staleTime: 60000, // 1 minute
+    staleTime: 0, // Always refetch to ensure fresh data when params change
     gcTime: 300000, // 5 minutes (formerly cacheTime)
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    placeholderData: (previousData) => previousData, // keepPreviousData equivalent
+    // Don't use placeholderData to avoid showing stale data when sorting/filtering changes
   });
 
+  // Track if we need to refetch after create (when page changes to 1)
+  const [shouldRefetchAfterCreate, setShouldRefetchAfterCreate] = useState(false);
+
+  // Refetch when queryParams change after create
+  useEffect(() => {
+    if (shouldRefetchAfterCreate && queryParams.page === 1) {
+      setShouldRefetchAfterCreate(false);
+      // Small delay to ensure database is ready
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ["flashcards", queryParams], exact: true });
+      }, 400);
+    }
+  }, [queryParams, shouldRefetchAfterCreate, queryClient]);
+
   // Handle create flashcard
-  const handleCreateSuccess = (flashcard: FlashcardEntity, addAnother?: boolean) => {
-    toast.success("Fiszka została dodana");
+  const handleCreateSuccess = async (_flashcard: FlashcardEntity, addAnother?: boolean) => {
     if (!addAnother) {
       setIsCreateModalOpen(false);
     }
-    refetch();
+    // Mark that we need to refetch after page changes to 1
+    setShouldRefetchAfterCreate(true);
+    // Reset to page 1 to show the newest flashcard (which will be at the top)
+    updateQueryParams({ page: 1 });
+    toast.success("Fiszka została dodana");
   };
 
   const handleCreateError = (error: ApiErrorResponse) => {
@@ -85,11 +110,11 @@ export function FlashcardList() {
   };
 
   // Handle update flashcard
-  const handleUpdateSuccess = (flashcard: FlashcardEntity) => {
-    toast.success("Fiszka została zaktualizowana");
+  const handleUpdateSuccess = async () => {
     setIsEditModalOpen(false);
     setEditingFlashcardId(null);
-    refetch();
+    // Cache invalidation is handled in useFlashcardMutations onSuccess
+    toast.success("Fiszka została zaktualizowana");
   };
 
   const handleUpdateError = (error: ApiErrorResponse) => {
@@ -100,10 +125,18 @@ export function FlashcardList() {
   const handleDeleteConfirm = async (id: string) => {
     try {
       await deleteMutation.mutateAsync(id);
-      toast.success("Fiszka została usunięta");
+
       setDeletingFlashcardId(null);
       setDeletingFlashcardFront(undefined);
-      refetch();
+
+      // Close study modal if open to avoid showing stale data
+      if (isStudyModalOpen) {
+        setIsStudyModalOpen(false);
+        setStudyIndex(0);
+      }
+
+      // Cache invalidation is handled in useFlashcardMutations onSuccess
+      toast.success("Fiszka została usunięta");
     } catch (error) {
       const apiError = error as ApiErrorResponse;
       toast.error(apiError.detail || "Wystąpił błąd podczas usuwania fiszki");
@@ -129,15 +162,6 @@ export function FlashcardList() {
     updateQueryParams({ page });
   };
 
-  // Handle sort change
-  const handleSortChange = (sort: "created_at" | "next_review_at") => {
-    updateQueryParams({ sort, page: 1 });
-  };
-
-  const handleOrderChange = (order: "asc" | "desc") => {
-    updateQueryParams({ order, page: 1 });
-  };
-
   // Handle search change
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -148,6 +172,25 @@ export function FlashcardList() {
     setIsCreateModalOpen(true);
   };
 
+  // Handle study click
+  const handleStudyClick = () => {
+    if (data && data.data.length > 0) {
+      setStudyIndex(0);
+      setIsStudyModalOpen(true);
+    }
+  };
+
+  // Handle study modal close
+  const handleStudyModalClose = () => {
+    setIsStudyModalOpen(false);
+    setStudyIndex(0);
+  };
+
+  // Handle study navigation
+  const handleStudyNavigate = (index: number) => {
+    setStudyIndex(index);
+  };
+
   // Get flashcard for edit
   const editingFlashcard = editingFlashcardId ? data?.data.find((f) => f.id === editingFlashcardId) : null;
 
@@ -156,20 +199,26 @@ export function FlashcardList() {
       <FlashcardListHeader
         searchValue={searchQuery}
         onSearchChange={handleSearchChange}
-        sortValue={queryParams.sort || "created_at"}
-        orderValue={queryParams.order || "desc"}
-        onSortChange={handleSortChange}
-        onOrderChange={handleOrderChange}
         onAddClick={handleAddClick}
+        onStudyClick={handleStudyClick}
+        hasFlashcards={data && data.data.length > 0}
       />
 
       {error && (
         <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
           <p className="font-semibold">Błąd ładowania fiszek</p>
-          <p className="text-sm">{(error as ApiErrorResponse).detail || "Wystąpił nieoczekiwany błąd"}</p>
+          <p className="text-sm">{(error as unknown as ApiErrorResponse).detail || "Wystąpił nieoczekiwany błąd"}</p>
           <button onClick={() => refetch()} className="mt-2 text-sm underline">
             Spróbuj ponownie
           </button>
+        </div>
+      )}
+
+      {/* Loading indicator when fetching */}
+      {isFetching && !isLoading && (
+        <div className="mb-4 p-3 bg-primary/10 text-primary rounded-md flex items-center gap-2">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <span className="text-sm">Aktualizuję listę...</span>
         </div>
       )}
 
@@ -225,6 +274,17 @@ export function FlashcardList() {
         flashcardFront={deletingFlashcardFront}
         onConfirm={handleDeleteConfirm}
       />
+
+      {/* Study Modal */}
+      {data && data.data.length > 0 && isStudyModalOpen && (
+        <FlashcardStudyModal
+          flashcards={data.data}
+          currentIndex={studyIndex}
+          isOpen={isStudyModalOpen}
+          onClose={handleStudyModalClose}
+          onNavigate={handleStudyNavigate}
+        />
+      )}
     </div>
   );
 }

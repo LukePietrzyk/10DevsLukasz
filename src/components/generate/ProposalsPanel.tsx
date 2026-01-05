@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useGenerateStore } from "@/lib/stores/generate.store";
 import ProposalList from "./ProposalList";
 import SaveSelectedBar from "./SaveSelectedBar";
+import FlashcardPreview from "./FlashcardPreview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ProposalsPanel: React.FC = () => {
   const { proposals, loading } = useGenerateStore();
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+
+  const handleOpenPreview = (index: number) => {
+    setPreviewIndex(index);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewIndex(null);
+  };
 
   if (loading) {
     return (
@@ -46,19 +56,32 @@ const ProposalsPanel: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Propozycje fiszek ({proposals.length})</CardTitle>
-          <CardDescription>Przejrzyj wygenerowane fiszki i wybierz te, które chcesz zapisać</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ProposalList />
-        </CardContent>
-      </Card>
+    <>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Propozycje fiszek ({proposals.length})</CardTitle>
+            <CardDescription>Przejrzyj wygenerowane fiszki i wybierz te, które chcesz zapisać</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProposalList onCardClick={handleOpenPreview} />
+          </CardContent>
+        </Card>
 
-      <SaveSelectedBar />
-    </div>
+        <SaveSelectedBar />
+      </div>
+
+      {/* Flashcard Preview Modal */}
+      {previewIndex !== null && (
+        <FlashcardPreview
+          proposals={proposals}
+          currentIndex={previewIndex}
+          isOpen={previewIndex !== null}
+          onClose={handleClosePreview}
+          onNavigate={setPreviewIndex}
+        />
+      )}
+    </>
   );
 };
 

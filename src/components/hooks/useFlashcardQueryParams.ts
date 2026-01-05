@@ -30,20 +30,21 @@ export function useFlashcardQueryParams() {
       return {
         page: 1,
         pageSize: isMobile ? 25 : 50,
-        sort: "created_at",
-        order: "desc",
+        // No sort/order - backend will use defaults (created_at desc - newest first)
       };
     }
 
     const searchParams = new URLSearchParams(window.location.search);
 
+    const pageParam = searchParams.get("page");
+    const pageSizeParam = searchParams.get("pageSize");
+
     return {
-      page: searchParams.get("page") ? parseInt(searchParams.get("page")!, 10) : 1,
-      pageSize: searchParams.get("pageSize") ? parseInt(searchParams.get("pageSize")!, 10) : isMobile ? 25 : 50,
+      page: pageParam ? parseInt(pageParam, 10) : 1,
+      pageSize: pageSizeParam ? parseInt(pageSizeParam, 10) : isMobile ? 25 : 50,
       search: searchParams.get("search") || undefined,
       subject: searchParams.get("subject") || undefined,
-      sort: (searchParams.get("sort") as "created_at" | "next_review_at") || "created_at",
-      order: (searchParams.get("order") as "asc" | "desc") || "desc",
+      // No sort/order - backend will use defaults (created_at desc - newest first)
     };
   }, [isMobile, urlKey]);
 

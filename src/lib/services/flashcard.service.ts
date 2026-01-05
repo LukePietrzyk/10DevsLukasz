@@ -41,7 +41,11 @@ export class FlashcardService {
 
     // Apply search filter (full-text search on front and back)
     if (query.search) {
-      supabaseQuery = supabaseQuery.textSearch("fts", query.search);
+      // Use ilike for simple substring matching (more user-friendly than tsquery)
+      // Search in both front and back fields using OR condition
+      // Supabase .or() syntax: "column.operator.value,column2.operator.value2"
+      const searchTerm = query.search.replace(/'/g, "''"); // Escape single quotes for SQL
+      supabaseQuery = supabaseQuery.or(`front.ilike.%${searchTerm}%,back.ilike.%${searchTerm}%`);
     }
 
     // Apply subject filter (exact match)

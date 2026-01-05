@@ -1,15 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type {
-  CreateFlashcardDto,
-  UpdateFlashcardDto,
-  FlashcardEntity,
-  ApiErrorResponse,
-  FlashcardsListResponse,
-} from "@/types";
+import type { CreateFlashcardDto, UpdateFlashcardDto, FlashcardEntity, ApiErrorResponse } from "@/types";
 
 /**
  * Custom hook for flashcard mutations (create, update, delete).
- * Provides mutations with optimistic updates and error handling.
+ * Provides mutations with automatic cache invalidation for immediate UI updates.
  */
 export function useFlashcardMutations() {
   const queryClient = useQueryClient();
@@ -33,8 +27,13 @@ export function useFlashcardMutations() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidate all flashcard queries to refetch
-      queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+      // Delay to ensure database write is committed before invalidating cache
+      // Supabase may have slight replication delay, especially for subsequent writes
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["flashcards"], refetchType: "active" });
+        // Also force refetch to ensure data is loaded
+        queryClient.refetchQueries({ queryKey: ["flashcards"], exact: false });
+      }, 300);
     },
   });
 
@@ -57,8 +56,13 @@ export function useFlashcardMutations() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidate all flashcard queries to refetch
-      queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+      // Delay to ensure database write is committed before invalidating cache
+      // Supabase may have slight replication delay, especially for subsequent writes
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["flashcards"], refetchType: "active" });
+        // Also force refetch to ensure data is loaded
+        queryClient.refetchQueries({ queryKey: ["flashcards"], exact: false });
+      }, 300);
     },
   });
 
@@ -75,8 +79,13 @@ export function useFlashcardMutations() {
       }
     },
     onSuccess: () => {
-      // Invalidate all flashcard queries to refetch
-      queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+      // Delay to ensure database write is committed before invalidating cache
+      // Supabase may have slight replication delay, especially for subsequent writes
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["flashcards"], refetchType: "active" });
+        // Also force refetch to ensure data is loaded
+        queryClient.refetchQueries({ queryKey: ["flashcards"], exact: false });
+      }, 300);
     },
   });
 

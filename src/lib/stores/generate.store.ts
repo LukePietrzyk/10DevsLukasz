@@ -16,6 +16,7 @@ interface GenerateState {
   // Actions
   generate: (req: GenerateRequestDto) => Promise<void>;
   toggleSelect: (id: number) => void;
+  updateProposal: (index: number, updates: Partial<FlashcardProposalDto>) => void;
   saveSelected: () => Promise<void>;
   reset: () => void;
   clearError: () => void;
@@ -100,6 +101,19 @@ export const useGenerateStore = create<GenerateState>((set, get) => ({
     set({ selectedIds: newSelectedIds });
   },
 
+  updateProposal: (index: number, updates: Partial<FlashcardProposalDto>) => {
+    const { proposals } = get();
+    const newProposals = [...proposals];
+
+    if (index >= 0 && index < newProposals.length) {
+      newProposals[index] = {
+        ...newProposals[index],
+        ...updates,
+      };
+      set({ proposals: newProposals });
+    }
+  },
+
   saveSelected: async () => {
     const { proposals, selectedIds } = get();
 
@@ -136,7 +150,7 @@ export const useGenerateStore = create<GenerateState>((set, get) => ({
         throw new Error(error.detail || "Błąd podczas zapisywania fiszek");
       }
 
-      const result: BatchCreateResponse = await response.json();
+      await response.json();
 
       // Reset stanu po sukcesie
       set({

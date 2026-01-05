@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { FlashcardEntity, ApiErrorResponse, CreateFlashcardDto, UpdateFlashcardDto } from "@/types";
+import { useFlashcardMutations } from "@/components/hooks/useFlashcardMutations";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Schema for form validation (simplified - front and back are required, subject is optional)
 const flashcardFormSchema = z.object({
@@ -36,9 +36,9 @@ interface FlashcardFormProps {
 }
 
 export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, onError }: FlashcardFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFlashcard, setIsLoadingFlashcard] = useState(false);
   const [addAnother, setAddAnother] = useState(false);
+  const { createMutation, updateMutation } = useFlashcardMutations();
 
   const form = useForm<FlashcardFormValues>({
     resolver: zodResolver(flashcardFormSchema),
@@ -54,9 +54,17 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
     if (isOpen && mode === "edit" && flashcardId) {
       setIsLoadingFlashcard(true);
       fetch(`/api/flashcards/${flashcardId}`)
-        .then((res) => {
+        .then(async (res) => {
           if (!res.ok) {
-            throw new Error("Failed to fetch flashcard");
+            // Try to parse error response
+            let errorDetail = "Failed to fetch flashcard";
+            try {
+              const errorData = await res.json();
+              errorDetail = errorData.detail || errorDetail;
+            } catch {
+              // Ignore JSON parse errors
+            }
+            throw new Error(errorDetail);
           }
           return res.json();
         })
@@ -69,13 +77,16 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
         })
         .catch((error) => {
           console.error("Error loading flashcard:", error);
+          const status = error.message.includes("not found") ? 404 : 500;
           onError({
             type: "fetch_error",
             title: "Error Loading Flashcard",
-            status: 500,
-            detail: "Failed to load flashcard data",
+            status,
+            detail: error.message || "Failed to load flashcard data",
             instance: `/api/flashcards/${flashcardId}`,
           });
+          // Close the modal on error
+          onClose();
         })
         .finally(() => {
           setIsLoadingFlashcard(false);
@@ -87,11 +98,9 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
         subject: "",
       });
     }
-  }, [isOpen, mode, flashcardId, form, onError]);
+  }, [isOpen, mode, flashcardId, form, onError, onClose]);
 
   const onSubmit = async (values: FlashcardFormValues) => {
-    setIsLoading(true);
-
     try {
       if (mode === "create") {
         const createData: CreateFlashcardDto = {
@@ -101,30 +110,19 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
           source: "manual",
         };
 
-        const response = await fetch("/api/flashcards", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(createData),
-        });
+        const newFlashcard = await createMutation.mutateAsync(createData);
+        const shouldAddAnother = addAnother; // Save the flag value before any changes
+        onSuccess(newFlashcard, shouldAddAnother);
 
-        if (!response.ok) {
-          const error: ApiErrorResponse = await response.json();
-          onError(error);
-          setIsLoading(false);
-          return;
-        }
-
-        const newFlashcard: FlashcardEntity = await response.json();
-        onSuccess(newFlashcard, addAnother);
-
-        if (addAnother) {
+        if (shouldAddAnother) {
+          // Reset form but keep modal open
           form.reset({
             front: "",
             back: "",
             subject: "",
           });
+          // Reset the flag AFTER form reset (but before focus)
+          setAddAnother(false);
           // Focus on front field
           setTimeout(() => {
             const frontInput = document.querySelector<HTMLInputElement>('input[name="front"]');
@@ -143,7 +141,6 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
             detail: "Flashcard ID is required for edit mode",
             instance: "/api/flashcards",
           });
-          setIsLoading(false);
           return;
         }
 
@@ -153,36 +150,15 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
           subject: values.subject || undefined,
         };
 
-        const response = await fetch(`/api/flashcards/${flashcardId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updateData),
-        });
-
-        if (!response.ok) {
-          const error: ApiErrorResponse = await response.json();
-          onError(error);
-          setIsLoading(false);
-          return;
-        }
-
-        const updatedFlashcard: FlashcardEntity = await response.json();
+        const updatedFlashcard = await updateMutation.mutateAsync({ id: flashcardId, data: updateData });
         onSuccess(updatedFlashcard);
         onClose();
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      onError({
-        type: "network_error",
-        title: "Network Error",
-        status: 500,
-        detail: "An unexpected error occurred",
-        instance: mode === "create" ? "/api/flashcards" : `/api/flashcards/${flashcardId}`,
-      });
-    } finally {
-      setIsLoading(false);
+      const apiError = error as ApiErrorResponse;
+      onError(apiError);
+      // Reset flag on error
       setAddAnother(false);
     }
   };
@@ -190,6 +166,7 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       if (mode === "create") {
+        e.preventDefault();
         setAddAnother(true);
         form.handleSubmit(onSubmit)();
       }
@@ -218,7 +195,12 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
                   <FormItem>
                     <FormLabel>Front (Pytanie)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Wprowadź pytanie..." maxLength={2000} disabled={isLoading} />
+                      <Input
+                        {...field}
+                        placeholder="Wprowadź pytanie..."
+                        maxLength={2000}
+                        disabled={createMutation.isPending || updateMutation.isPending}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -237,7 +219,7 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
                         placeholder="Wprowadź odpowiedź..."
                         maxLength={2000}
                         rows={4}
-                        disabled={isLoading}
+                        disabled={createMutation.isPending || updateMutation.isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -256,7 +238,7 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
                         {...field}
                         placeholder="Np. JavaScript, Matematyka..."
                         maxLength={100}
-                        disabled={isLoading}
+                        disabled={createMutation.isPending || updateMutation.isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -265,7 +247,12 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
               />
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                >
                   Anuluj
                 </Button>
                 {mode === "create" && (
@@ -276,13 +263,26 @@ export function FlashcardForm({ isOpen, onClose, mode, flashcardId, onSuccess, o
                       setAddAnother(true);
                       form.handleSubmit(onSubmit)();
                     }}
-                    disabled={isLoading}
+                    disabled={createMutation.isPending || updateMutation.isPending}
                   >
                     Zapisz i dodaj kolejną
                   </Button>
                 )}
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Zapisywanie..." : mode === "create" ? "Zapisz" : "Zapisz zmiany"}
+                <Button
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                  onClick={() => {
+                    // Ensure addAnother is false for regular submit
+                    if (mode === "create") {
+                      setAddAnother(false);
+                    }
+                  }}
+                >
+                  {createMutation.isPending || updateMutation.isPending
+                    ? "Zapisywanie..."
+                    : mode === "create"
+                      ? "Zapisz"
+                      : "Zapisz zmiany"}
                 </Button>
               </DialogFooter>
             </form>
