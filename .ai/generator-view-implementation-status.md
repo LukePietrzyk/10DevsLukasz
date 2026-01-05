@@ -3,6 +3,7 @@
 ## Zrealizowane kroki
 
 ### ✅ Krok 6: Utworzenie routingu dla widoku generowania (/flashcards/generate)
+
 - **Utworzono stronę Astro:**
   - `src/pages/flashcards/generate.astro` - strona generowania z dwukolumnowym layoutem
   - `export const prerender = false` dla integracji z API
@@ -13,6 +14,7 @@
   - Dwukolumnowy układ: SourceForm (lewa) + ProposalsPanel (prawa)
 
 ### ✅ Krok 7: Implementacja useGenerateStore z Zustand
+
 - **Utworzono `src/lib/stores/generate.store.ts` z pełną funkcjonalnością:**
   - Interface `GenerateState` z wszystkimi wymaganymi polami i metodami
   - Metody: `generate`, `toggleSelect`, `saveSelected`, `reset`, `clearError`
@@ -27,6 +29,7 @@
   - Obsługa błędów z polskimi komunikatami
 
 ### ✅ Krok 8: Implementacja komponentów generowania fiszek
+
 - **Utworzono `src/components/generate/SourceForm.tsx`:**
   - Formularz z React Hook Form + Zod validation
   - Textarea dla materiału źródłowego (min 20, max 5000 znaków)
@@ -63,6 +66,7 @@
   - Wyłączenie gdy brak zaznaczonych kart
 
 ### ✅ Krok 9: Konfiguracja i testy
+
 - **Zainstalowane komponenty UI:**
   - `checkbox` z shadcn/ui dla zaznaczania propozycji
 - **Naprawione błędy:**
@@ -76,6 +80,7 @@
 ## Funkcjonalności zaimplementowane
 
 ### Pełny flow generowania fiszek:
+
 1. **Wprowadzanie materiału** - textarea z walidacją i licznikiem znaków
 2. **Konfiguracja** - liczba kart (1-20) i opcjonalny temat
 3. **Generowanie** - wywołanie API z loading state (mock data w Phase 1)
@@ -83,18 +88,21 @@
 5. **Zapis wybranych** - batch save do `/api/flashcards/batch`
 
 ### Responsywny design:
+
 - Mobile-first approach z breakpointami md/lg
 - Dwukolumnowy layout na większych ekranach
 - Responsywny grid dla kart propozycji
 - Sticky save bar na wszystkich rozmiarach
 
 ### Interaktywność:
+
 - Flip kart na kliknięcie z smooth animation
 - Zaznaczanie/odznaczanie propozycji z wizualnym feedbackiem
 - Real-time licznik zaznaczonych kart
 - Loading states dla wszystkich async operacji
 
 ### Obsługa stanów i błędów:
+
 - Loading spinner podczas generowania
 - Empty states z instrukcjami
 - Walidacja formularza z komunikatami błędów
@@ -103,24 +111,28 @@
 ## Kolejne kroki
 
 ### 🔄 Krok 10: Dodanie obsługi toastów i komunikatów
+
 - Zainstalowanie i konfiguracja Sonner (toast library)
 - Dodanie globalnych toastów success po zapisie fiszek
 - Komunikaty błędów dla różnych scenariuszy API (400/422, 500, 409)
 - Integracja z useGenerateStore
 
 ### 🔄 Krok 11: Testy i finalizacja
+
 - Test pełnego flow: wklej tekst → generuj → zaznacz → zapisz → redirect
 - Sprawdzenie responsywności na różnych urządzeniach
 - Test walidacji formularza i obsługi błędów
 - Weryfikacja integracji z API endpoints
 
 ### 🔄 Krok 12: Optymalizacje i Phase 2 prep
+
 - Dodanie funkcji edycji propozycji (modal)
 - Implementacja prawdziwego API `/api/flashcards/generate`
 - Dodanie feature flag dla Phase 2 funkcjonalności
 - Performance optimizations (React.memo, useCallback)
 
 ### 🔄 Krok 13: Dokumentacja i testy E2E
+
 - Aktualizacja dokumentacji API
 - Testy jednostkowe dla store (toggle, batch body)
 - Testy E2E w Playwright: generate → select → save → redirect

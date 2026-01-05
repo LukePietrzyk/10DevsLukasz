@@ -23,6 +23,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 2.1 Widoki autentykacji (Priorytet 1)
 
 #### Widok 1: Rejestracja
+
 - **Ścieżka**: `/auth/register`
 - **Główny cel**: Założenie konta użytkownika przy użyciu emaila i hasła
 - **Kluczowe informacje**:
@@ -44,6 +45,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Focus trap w formularzu
 
 #### Widok 2: Logowanie
+
 - **Ścieżka**: `/auth/login`
 - **Główny cel**: Dostęp do aplikacji dla zarejestrowanych użytkowników
 - **Kluczowe informacje**:
@@ -65,6 +67,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Komunikaty błędów bez ujawniania szczegółów bezpieczeństwa
 
 #### Widok 3: Reset hasła – żądanie
+
 - **Ścieżka**: `/auth/forgot`
 - **Główny cel**: Wysłanie maila z linkiem do resetu hasła
 - **Kluczowe informacje**:
@@ -83,6 +86,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Rate limiting: 5 req/min IP
 
 #### Widok 4: Reset hasła – zmiana
+
 - **Ścieżka**: `/auth/reset`
 - **Główny cel**: Ustawienie nowego hasła po kliknięciu w link z maila
 - **Kluczowe informacje**:
@@ -104,6 +108,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 2.2 Widoki główne aplikacji (Priorytet 1)
 
 #### Widok 5: Dashboard / Lista fiszek
+
 - **Ścieżka**: `/flashcards` (domyślny widok po logowaniu)
 - **Główny cel**: Przeglądanie i zarządzanie własnymi fiszkami
 - **Kluczowe informacje**:
@@ -136,6 +141,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Optimistic updates dla szybkiego feedbacku
 
 #### Widok 6: Generowanie fiszek z AI (Priorytet 1, Phase 2)
+
 - **Ścieżka**: `/flashcards/generate`
 - **Główny cel**: Główny przepływ po logowaniu – generowanie fiszek z tekstu źródłowego przy użyciu AI
 - **Kluczowe informacje**:
@@ -167,6 +173,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Komunikaty sukcesu z liczbą zapisanych fiszek
 
 #### Widok 7: Powtórki na dziś (Priorytet 2)
+
 - **Ścieżka**: `/reviews` lub `/reviews/today`
 - **Główny cel**: Ekran powtórek z fiszkami do powtórki na dziś
 - **Kluczowe informacje**:
@@ -189,6 +196,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Focus management: przejście fokusu po każdej ocenie
 
 #### Widok 8: Sesja powtórek – karta
+
 - **Ścieżka**: `/reviews/session/:sessionId` (fullscreen overlay)
 - **Główny cel**: Prezentacja pojedynczej fiszki w sesji powtórek
 - **Kluczowe informacje**:
@@ -217,6 +225,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 2.3 Widoki pomocnicze (Priorytet 2)
 
 #### Widok 9: Ustawienia konta
+
 - **Ścieżka**: `/settings`
 - **Główny cel**: Zmiana hasła i usunięcie konta
 - **Kluczowe informacje**:
@@ -242,6 +251,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - WCAG focus management
 
 #### Widok 10: FAQ / Pomoc
+
 - **Ścieżka**: `/help`
 - **Główny cel**: Odpowiedzi na podstawowe pytania i możliwość zgłoszenia feedbacku
 - **Kluczowe informacje**:
@@ -257,6 +267,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Formularz feedbacku z walidacją (jeśli nie mailto)
 
 #### Widok 11: Strona główna / Landing
+
 - **Ścieżka**: `/` lub `/index`
 - **Główny cel**: Strona powitalna dla niezalogowanych użytkowników
 - **Kluczowe informacje**:
@@ -271,6 +282,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - CTA buttons z wyraźnym kontrastem
 
 #### Widok 12: 404 / Błędy
+
 - **Ścieżka**: `/*` (catch-all)
 - **Główny cel**: Informacja o błędzie lub nieistniejącej stronie
 - **Kluczowe informacje**:
@@ -363,11 +375,13 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - "Wyloguj" → wylogowanie i przekierowanie na `/auth/login`
 
 **Komponenty**:
+
 - `NavigationMenu` (Shadcn/ui) jako podstawa
 - `Badge` (Shadcn/ui) dla licznika powtórek
 - `DropdownMenu` (Shadcn/ui) dla menu użytkownika
 
 **Zachowanie**:
+
 - Badge powtórek aktualizowany w czasie rzeczywistym (React Query refetch)
 - Dropdown zamyka się po kliknięciu opcji
 - Wizualne wskazanie aktywnej sekcji (underline lub background)
@@ -377,6 +391,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 **Lokalizacja**: Tylko na liście fiszek (`/flashcards`) i ustawieniach (`/settings`).
 
 **Struktura**:
+
 - `/flashcards`: "Moje fiszki"
 - `/settings`: "Ustawienia"
 
@@ -387,6 +402,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 **Lokalizacja**: Sesja powtórek (`/reviews/session/:sessionId`).
 
 **Zachowanie**:
+
 - Overlay zasłania navbar dla pełnego skupienia
 - Przycisk "Zamknij" w lewym górnym rogu (opcjonalnie)
 - ESC zamyka sesję (z potwierdzeniem, jeśli sesja nie zakończona)
@@ -394,6 +410,7 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 4.4 Deep Linking
 
 **Obsługa**:
+
 - Bezpośrednie URL-e do edycji (`/flashcards/:id/edit`) otwierają modal po mountcie
 - URL query parameters dla sortowania i filtrów (shareable links)
 - React Router lub Astro routing dla SPA-like experience
@@ -403,11 +420,13 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 5.1 Komponenty autentykacji
 
 #### `AuthLayout`
+
 - **Opis**: Wspólny layout dla ekranów auth (centered card)
 - **Źródło**: React component
 - **Funkcjonalność**: Centrowany kontener z logo/nazwą aplikacji, tło z gradientem
 
 #### `RegisterForm`, `LoginForm`, `ForgotPasswordForm`, `ResetPasswordForm`
+
 - **Opis**: Formularze autentykacji z walidacją
 - **Źródło**: React components z React Hook Form + Zod
 - **Funkcjonalność**: Walidacja inline, komunikaty błędów, integracja z Supabase Auth
@@ -415,45 +434,51 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 5.2 Komponenty fiszek
 
 #### `FlashcardList`
+
 - **Opis**: Główny komponent listy fiszek z React Query
 - **Źródło**: React component
 - **Funkcjonalność**: Paginacja, wyszukiwanie, sortowanie, integracja z `/api/flashcards`
 
 #### `FlashcardTable` / `FlashcardCard`
+
 - **Opis**: Responsywny widok listy (tabela desktop, karty mobile)
 - **Źródło**: React components
 - **Funkcjonalność**: Wyświetlanie fiszek z akcjami (edytuj, usuń), nawigacja klawiaturowa
 
 #### `FlashcardForm`
+
 - **Opis**: Reużywalny formularz tworzenia/edycji fiszki
 - **Źródło**: React component z React Hook Form + Zod
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Pola: front (1-120 znaków), back (1-300 znaków), subject (opcjonalny, ≤40 znaków)
   - Draft w localStorage (nice-to-have)
   - Klawiatura: Tab między polami, Ctrl+Enter = "zapisz i dodaj kolejną"
   - Integracja z `/api/flashcards` (POST dla create, PATCH dla update)
 
 #### `FlashcardGenerationView`
+
 - **Opis**: Główny widok generowania fiszek z AI
 - **Źródło**: React component
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Formularz wprowadzania tekstu źródłowego
   - Wywołanie endpointu generowania AI (Phase 2, obecnie mock)
   - Lista propozycji z recenzją jednostkową
   - Bulk save przez `/api/flashcards/batch`
 
 #### `FlashcardProposalList`
+
 - **Opis**: Lista propozycji fiszek z AI
 - **Źródło**: React component
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Wyświetlanie propozycji z stanami (pending, accepted, edited, rejected)
   - Akcje: Akceptuj, Edytuj (inline/modal), Odrzuć
   - Licznik zaakceptowanych/edytowanych/odrzuconych
 
 #### `DeleteFlashcardDialog`
+
 - **Opis**: Modal potwierdzający usunięcie fiszki
 - **Źródło**: AlertDialog Shadcn/ui
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Ostrzeżenie: "Na pewno chcesz usunąć tę fiszkę?"
   - Przyciski: "Anuluj", "Usuń"
   - Integracja z `/api/flashcards/{id}` (DELETE)
@@ -461,34 +486,38 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 5.3 Komponenty powtórek
 
 #### `ReviewSessionView`
+
 - **Opis**: Główny widok sesji powtórek
 - **Źródło**: React component
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Automatyczne tworzenie sesji przy załadowaniu (`POST /api/review-sessions`)
   - Przechowywanie sessionId w React state (lub localStorage)
   - Wyświetlanie listy fiszek do powtórki (max 100)
 
 #### `ReviewCard`
+
 - **Opis**: Komponent pojedynczej fiszki w sesji powtórek
 - **Źródło**: React component
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Widok front → reveal → back
   - Animacja flip (opcjonalnie)
   - Obsługa gestów (swipe left/right)
   - Integracja z `/api/review-sessions/{sessionId}/answers` (POST)
 
 #### `DifficultyButtons`
+
 - **Opis**: Trzy duże przyciski oceny trudności
 - **Źródło**: Shadcn/ui Button
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Przyciski: "Trudne" (1), "Średnie" (2), "Łatwe" (3)
   - Klawiatura: 1/2/3
   - Duże hit-targets na mobile (min. 44×44px)
 
 #### `ProgressCounter`
+
 - **Opis**: Licznik postępu sesji (X/Y)
 - **Źródło**: React component
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Wyświetlanie: "X / Y" (liczba powtórek wykonanych / całkowita liczba fiszek)
   - ARIA-live region dla aktualizacji
   - Aktualizacja po każdej ocenie
@@ -496,32 +525,36 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 5.4 Komponenty UI wielokrotnego użycia
 
 #### `SearchBar`
+
 - **Opis**: Pole wyszukiwania z debouncingiem
 - **Źródło**: React component z Shadcn/ui Input
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Debouncing 300ms
   - Integracja z URL query parameters
   - Przycisk wyczyszczenia (X)
 
 #### `Pagination`
+
 - **Opis**: Paginacja listy
 - **Źródło**: Shadcn/ui Pagination
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Przyciski "Poprzednie" / "Następne"
   - Wyświetlanie numeru strony
   - Integracja z URL query parameters (`page`, `pageSize`)
 
 #### `SkeletonLoader`
+
 - **Opis**: Placeholdery ładowania
 - **Źródło**: Shadcn/ui Skeleton
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Skeleton rows dla listy fiszek
   - Skeleton card dla formularzy
 
 #### `ErrorMessage`
+
 - **Opis**: Komponent do wyświetlania błędów inline
 - **Źródło**: React component z Shadcn/ui Alert
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Mapowanie kodów HTTP na komunikaty po polsku:
     - 400: błędy walidacji z szczegółami
     - 403: brak dostępu
@@ -534,24 +567,27 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
   - Przycisk "Spróbuj ponownie"
 
 #### `ToastContainer`
+
 - **Opis**: Globalne powiadomienia (success / error)
 - **Źródło**: `sonner` lub Shadcn/ui Toast
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Toast dla operacji CRUD (sukces/błąd)
   - Auto-dismiss po 3-5 sekundach
   - ARIA-live region
 
 #### `ErrorBoundary`
+
 - **Opis**: Globalny catcher błędów React
 - **Źródło**: React Error Boundary
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Wyświetla prosty ekran "Coś poszło nie tak. Spróbuj odświeżyć stronę lub zalogować się ponownie"
   - Zapisywanie logów błędu (konsola lub endpoint backendowy)
 
 #### `EmptyState`
+
 - **Opis**: Ekran pustego stanu
 - **Źródło**: React component
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Komunikat: "Nie masz fiszek do powtórki" / "Nie masz jeszcze fiszek"
   - Link do dodania nowych fiszek
   - Ikona ilustracyjna
@@ -559,22 +595,25 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ### 5.5 Komponenty ustawień
 
 #### `SettingsLayout`
+
 - **Opis**: Layout strony ustawień
 - **Źródło**: Astro component
 - **Funkcjonalność**: Sekcje: dane dostępowe, zmiana hasła, usunięcie konta
 
 #### `ChangePasswordForm`
+
 - **Opis**: Formularz zmiany hasła
 - **Źródło**: React component z React Hook Form + Zod
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Pola: aktualne hasło, nowe hasło, potwierdzenie
   - Walidacja: aktualne hasło wymagane, nowe hasło min. 8 znaków
   - Integracja z Supabase Auth
 
 #### `DeleteAccountDialog`
+
 - **Opis**: Modal usunięcia konta
 - **Źródło**: AlertDialog Shadcn/ui
-- **Funkcjonalność**: 
+- **Funkcjonalność**:
   - Ostrzeżenie o nieodwracalnym usunięciu
   - Wymagane potwierdzenie (wpisanie "USUŃ" lub hasła)
   - Integracja z Supabase Auth (usunięcie konta i danych)
@@ -582,104 +621,125 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 ## 6. Mapowanie historyjek użytkownika do architektury UI
 
 ### US-001 Rejestracja konta
+
 - **Widok**: `/auth/register`
 - **Komponenty**: `AuthLayout`, `RegisterForm`, `EmailInput`, `PasswordInput`, `FormError`
 - **Funkcjonalność**: Formularz z walidacją, komunikaty błędów, automatyczne logowanie lub przekierowanie
 
 ### US-002 Logowanie
+
 - **Widok**: `/auth/login`
 - **Komponenty**: `AuthLayout`, `LoginForm`, `EmailInput`, `PasswordInput`, `FormError`
 - **Funkcjonalność**: Formularz z walidacją, neutralne komunikaty błędów, przekierowanie na `/flashcards`
 
 ### US-003 Kolekcje reguł
+
 - **Status**: Poza zakresem MVP (Phase 2)
 
 ### US-004 Bezpieczny dostęp i uwierzytelnianie
+
 - **Widoki**: `/auth/login`, `/auth/register`, `/auth/forgot`, `/auth/reset`
 - **Komponenty**: Wszystkie komponenty autentykacji
 - **Funkcjonalność**: Dedykowane strony, bezpieczne sesje/tokeny, brak zewnętrznych serwisów logowania
 
 ### US-005 Wylogowanie
+
 - **Widok**: Dropdown w navbarze
 - **Komponenty**: `NavigationMenu`, `DropdownMenu`
 - **Funkcjonalność**: Przycisk "Wyloguj" w dropdownie użytkownika, unieważnienie sesji, przekierowanie na `/auth/login`
 
 ### US-006 Reset hasła
+
 - **Widoki**: `/auth/forgot`, `/auth/reset`
 - **Komponenty**: `ForgotPasswordForm`, `ResetPasswordForm`
 - **Funkcjonalność**: Link "Zapomniałem hasła" na ekranie logowania, wysłanie maila, formularz ustawienia nowego hasła
 
 ### US-007 Zmiana hasła
+
 - **Widok**: `/settings`
 - **Komponenty**: `ChangePasswordForm`
 - **Funkcjonalność**: Formularz w ustawieniach konta, walidacja aktualnego hasła
 
 ### US-008 Usunięcie konta i danych
+
 - **Widok**: `/settings`
 - **Komponenty**: `DeleteAccountDialog`
 - **Funkcjonalność**: Opcja "Usuń konto" w ustawieniach, modal z potwierdzeniem, trwałe usunięcie konta i danych
 
 ### US-009 Przeglądanie listy fiszek
+
 - **Widok**: `/flashcards`
 - **Komponenty**: `FlashcardList`, `FlashcardTable` / `FlashcardCard`, `Pagination`, `EmptyState`
 - **Funkcjonalność**: Lista fiszek z paginacją (50 desktop / 25 mobile), wyświetlanie front/back/subject, ekran pustego stanu
 
 ### US-010 Wyszukiwanie fiszek po treści
+
 - **Widok**: `/flashcards`
 - **Komponenty**: `SearchBar`
 - **Funkcjonalność**: Pole wyszukiwania z debouncingiem 300ms, filtrowanie po front/back, URL query parameters
 
 ### US-011 Dodanie nowej fiszki ręcznie
+
 - **Widok**: `/flashcards` (modal)
 - **Komponenty**: `FlashcardForm` (modal Dialog)
 - **Funkcjonalność**: Przycisk "Dodaj fiszkę", formularz z polami front/back/subject, opcje "Zapisz i dodaj kolejną" / "Zapisz i wróć do listy", klawiatura (Tab, Ctrl+Enter)
 
 ### US-012 Edycja istniejącej fiszki
+
 - **Widok**: `/flashcards` (modal)
 - **Komponenty**: `FlashcardForm` (modal Dialog)
 - **Funkcjonalność**: Akcja "Edytuj" na liście, modal z pre-filled formularzem, walidacja, optimistic update
 
 ### US-013 Usunięcie fiszki
+
 - **Widok**: `/flashcards` (AlertDialog)
 - **Komponenty**: `DeleteFlashcardDialog`
 - **Funkcjonalność**: Akcja "Usuń" na liście, modal z potwierdzeniem, trwałe usunięcie
 
 ### US-014 Przegląd fiszek do powtórki na dziś
+
 - **Widok**: `/reviews`
 - **Komponenty**: `ReviewSessionView`, `EmptyState`
 - **Funkcjonalność**: Lista fiszek do powtórki (max 100), automatyczne tworzenie sesji, ekran pustego stanu
 
 ### US-015 Powtarzanie pojedynczej fiszki
+
 - **Widok**: `/reviews/session/:sessionId`
 - **Komponenty**: `ReviewCard`, `RevealButton`
 - **Funkcjonalność**: Widok front → reveal → back, przycisk/klawisz "Pokaż odpowiedź" (Space), przyciski oceny dostępne po odsłonięciu
 
 ### US-016 Ocenianie trudności fiszki i planowanie powtórki
+
 - **Widok**: `/reviews/session/:sessionId`
 - **Komponenty**: `DifficultyButtons`, `ReviewCard`
 - **Funkcjonalność**: Trzy opcje (trudne, średnie, łatwe) – klawisze 1/2/3, zapis wyniku, aktualizacja nextReviewAt, automatyczne przejście do kolejnej fiszki
 
 ### US-017 Informacja o postępie w sesji powtórek
+
 - **Widok**: `/reviews/session/:sessionId`
 - **Komponenty**: `ProgressCounter`, `ProgressBar`
 - **Funkcjonalność**: Licznik X/Y, aktualizacja po każdej ocenie, komunikat o ukończeniu po zakończeniu sesji
 
 ### US-018 Obsługa błędów przy zapisie fiszki
+
 - **Widoki**: Wszystkie widoki z formularzami fiszek
 - **Komponenty**: `ErrorMessage`, `ToastContainer`
 - **Funkcjonalność**: Komunikaty błędów inline, zachowanie danych w formularzu, przycisk "Spróbuj ponownie"
 
 ### US-019 Obsługa braku internetu podczas pracy
+
 - **Widoki**: Wszystkie widoki wymagające komunikacji z API
 - **Komponenty**: `ErrorMessage`, `ToastContainer`
 - **Funkcjonalność**: Wykrywanie braku połączenia, komunikat "offline", blokada zapisu, próba automatycznego ponowienia po odzyskaniu połączenia
 
 ### US-020 Przegląd i edycja ustawień konta
+
 - **Widok**: `/settings`
 - **Komponenty**: `SettingsLayout`, `ChangePasswordForm`, `DeleteAccountDialog`
 - **Funkcjonalność**: Sekcje: dane dostępowe (email read-only), zmiana hasła, usunięcie konta, przekierowanie na `/auth/login` bez zalogowania
 
 ### US-021 Przegląd FAQ i zgłoszenie feedbacku
+
 - **Widok**: `/help`
 - **Komponenty**: `HelpLayout`, `FAQAccordion`, `FeedbackLink`
 - **Funkcjonalność**: Lista FAQ, link "Zgłoś błąd/feedback" (mailto lub formularz)
@@ -725,35 +785,40 @@ Aplikacja wykorzystuje hybrydowe podejście Astro + React, zoptymalizowane pod M
 
 ### 8.2 Chaos w fiszkach (brak prostych kategorii i wyszukiwarki)
 
-**Rozwiązanie**: 
+**Rozwiązanie**:
+
 - Pole `subject` (opcjonalne) dla kategoryzacji
 - Wyszukiwanie z debouncingiem 300ms przeszukujące front i back
 - Sortowanie i filtry przez URL query parameters (shareable links)
 
 ### 8.3 Brak prostego, zintegrowanego widoku "co dzisiaj powtórzyć"
 
-**Rozwiązanie**: 
+**Rozwiązanie**:
+
 - Dedykowany ekran `/reviews` z listą fiszek do powtórki na dziś
 - Badge w nawigacji pokazujący liczbę fiszek do powtórki
 - Automatyczne tworzenie sesji przy załadowaniu
 
 ### 8.4 Niska motywacja i tendencja do odkładania nauki
 
-**Rozwiązanie**: 
+**Rozwiązanie**:
+
 - Licznik postępu (X/Y) w sesji powtórek dający poczucie progresu
 - Komunikat o ukończeniu powtórek na dziś
 - Prosty, nieprzytłaczający interfejs
 
 ### 8.5 Czasochłonność ręcznego wprowadzania fiszek
 
-**Rozwiązanie**: 
+**Rozwiązanie**:
+
 - Formularz z opcją "Zapisz i dodaj kolejną" (Ctrl+Enter)
 - Draft w localStorage (nice-to-have) dla zachowania danych
 - Bulk save dla fiszek generowanych przez AI
 
 ### 8.6 Brak przypomnień o powtórkach
 
-**Rozwiązanie**: 
+**Rozwiązanie**:
+
 - Badge w nawigacji pokazujący liczbę fiszek do powtórki
 - Dedykowany ekran `/reviews` z listą fiszek do powtórki
 

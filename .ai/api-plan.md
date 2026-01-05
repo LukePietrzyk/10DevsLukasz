@@ -2,35 +2,35 @@
 
 ## 1. Resources
 
-| Resource | Backing Table | Description |
-|----------|---------------|-------------|
-| Auth | Supabase `auth.users` & Supabase Auth REST | User registration, login, password management |
-| Flashcards | `flashcards` | User-owned study cards |
-| Review History | `review_history` | Single answer to a flashcard during a session |
-| Review Sessions | `review_sessions` | Logical container for a sequence of reviews executed on a given day |
-| Today Reviews (virtual) | `flashcards` filtered by `next_review_at` | Convenience collection representing cards due today |
-| Flashcard Favourites | `flashcard_favourites` | Many-to-many shortcut between users and favourite cards |
-| System Flags (admin) | `system_flags` | Feature flags & limits |
-| Events (internal) | `events` | Product analytics events |
+| Resource                | Backing Table                              | Description                                                         |
+| ----------------------- | ------------------------------------------ | ------------------------------------------------------------------- |
+| Auth                    | Supabase `auth.users` & Supabase Auth REST | User registration, login, password management                       |
+| Flashcards              | `flashcards`                               | User-owned study cards                                              |
+| Review History          | `review_history`                           | Single answer to a flashcard during a session                       |
+| Review Sessions         | `review_sessions`                          | Logical container for a sequence of reviews executed on a given day |
+| Today Reviews (virtual) | `flashcards` filtered by `next_review_at`  | Convenience collection representing cards due today                 |
+| Flashcard Favourites    | `flashcard_favourites`                     | Many-to-many shortcut between users and favourite cards             |
+| System Flags (admin)    | `system_flags`                             | Feature flags & limits                                              |
+| Events (internal)       | `events`                                   | Product analytics events                                            |
 
 _MVP exposes only bolded resources in the PRD (Auth, Flashcards, Review Sessions/History). Other tables remain internal or for admin tooling._
 
 ## 2. Endpoints
 
-
 ### 2.2 Flashcards
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/flashcards` | List cards (pagination, search, subject filter, sorting) |
-| POST | `/api/flashcards` | Create single card |
-| POST | `/api/flashcards/batch` | Create multiple cards (max 50 per request) |
-| GET | `/api/flashcards/{id}` | Get single card |
-| PUT | `/api/flashcards/{id}` | Replace card |
-| PATCH | `/api/flashcards/{id}` | Partial update (front, back, subject) |
-| DELETE | `/api/flashcards/{id}` | Permanently delete card |
+| Method | Path                    | Description                                              |
+| ------ | ----------------------- | -------------------------------------------------------- |
+| GET    | `/api/flashcards`       | List cards (pagination, search, subject filter, sorting) |
+| POST   | `/api/flashcards`       | Create single card                                       |
+| POST   | `/api/flashcards/batch` | Create multiple cards (max 50 per request)               |
+| GET    | `/api/flashcards/{id}`  | Get single card                                          |
+| PUT    | `/api/flashcards/{id}`  | Replace card                                             |
+| PATCH  | `/api/flashcards/{id}`  | Partial update (front, back, subject)                    |
+| DELETE | `/api/flashcards/{id}`  | Permanently delete card                                  |
 
 Query Parameters for list:
+
 - `page` (default 1)
 - `pageSize` (default 50, max 50 desktop / 25 mobile)
 - `limit` – maximum number of flashcards to return (alternative to pagination, mutually exclusive with `page`/`pageSize`)
@@ -40,6 +40,7 @@ Query Parameters for list:
 - `order` – sort direction: `asc` or `desc` (default: `desc`)
 
 #### Create / Update Request Body (Single Card)
+
 ```json
 {
   "front": "What is a closure?",
@@ -51,6 +52,7 @@ Query Parameters for list:
 ```
 
 #### Batch Create Request Body
+
 ```json
 {
   "flashcards": [
@@ -73,12 +75,14 @@ Query Parameters for list:
 ```
 
 Constraints for batch operations:
+
 - Maximum 50 cards per batch request
 - Each card follows same validation rules as single create
 - Total cards across all user's flashcards still limited to 2000
 - Atomic operation: either all cards are created or none (transaction)
 
 #### Response (Single Card)
+
 ```json
 {
   "id": "<uuid>",
@@ -97,6 +101,7 @@ Constraints for batch operations:
 ```
 
 #### Response (Batch Create)
+
 ```json
 {
   "created": 2,
@@ -136,6 +141,7 @@ Constraints for batch operations:
 Success codes: `200 OK`, `201 Created`, `204 No Content` (delete)
 
 Error codes:
+
 - `400 Bad Request` – validation failed (single card), invalid batch format, or invalid source/generationId combination
 - `403 Forbidden` – not owner
 - `404 Not Found`
@@ -146,6 +152,7 @@ Error codes:
 - `500 Internal Server Error`
 
 #### Batch Error Response (422)
+
 ```json
 {
   "type": "validation_error",
@@ -170,16 +177,19 @@ Error codes:
 ### 2.3 Review Workflow
 
 #### 2.3.1 Start Session
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/review-sessions` | Creates active session; returns list of card IDs due today (max 100) |
 
-Request body (optional) 
+| Method | Path                   | Description                                                          |
+| ------ | ---------------------- | -------------------------------------------------------------------- |
+| POST   | `/api/review-sessions` | Creates active session; returns list of card IDs due today (max 100) |
+
+Request body (optional)
+
 ```json
 { "limit": 100 }
 ```
 
 Response
+
 ```json
 {
   "sessionId": "<uuid>",
@@ -189,11 +199,13 @@ Response
 ```
 
 #### 2.3.2 Submit Answer
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/review-sessions/{sessionId}/answers` | Records answer & schedules next review |
+
+| Method | Path                                       | Description                            |
+| ------ | ------------------------------------------ | -------------------------------------- |
+| POST   | `/api/review-sessions/{sessionId}/answers` | Records answer & schedules next review |
 
 Request Body
+
 ```json
 {
   "flashcardId": "uuid1",
@@ -204,6 +216,7 @@ Request Body
 ```
 
 Response
+
 ```json
 {
   "nextReviewAt": "2026-01-03",
@@ -212,9 +225,10 @@ Response
 ```
 
 #### 2.3.3 Complete Session
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/review-sessions/{sessionId}/complete` | Marks session as `completed`; fires `review_session_completed` event |
+
+| Method | Path                                        | Description                                                          |
+| ------ | ------------------------------------------- | -------------------------------------------------------------------- |
+| POST   | `/api/review-sessions/{sessionId}/complete` | Marks session as `completed`; fires `review_session_completed` event |
 
 Response `204 No Content`
 
@@ -251,9 +265,10 @@ _Not in MVP UI but trivial CRUD supplied for future-proofing._
 ## 4. Validation & Business Logic
 
 ### 4.1 Flashcards Validation
-- `front` required, 1-120 chars plain text  *(DB `varchar(120)`)*
-- `back` required, 1-300 chars plain text  *(DB `varchar(300)`)*
-- `subject` optional, ≤40 chars  *(partial index on `subject`)*
+
+- `front` required, 1-120 chars plain text _(DB `varchar(120)`)_
+- `back` required, 1-300 chars plain text _(DB `varchar(300)`)_
+- `subject` optional, ≤40 chars _(partial index on `subject`)_
 - `source` optional, must be one of `"manual"`, `"ai-full"`, or `"ai-edited"` (defaults to `"manual"`)
 - `generationId` required for `"ai-full"` and `"ai-edited"` sources, must be null for `"manual"` source
 - Max 2 000 cards / user (`flashcards_limit` trigger). API returns **409 Conflict**.
@@ -261,28 +276,30 @@ _Not in MVP UI but trivial CRUD supplied for future-proofing._
 - **Batch validation:** Each card validated individually; partial failures return `422` with error details
 
 ### 4.2 Review Logic
-| Difficulty | Next Interval | DB Update |
-|------------|--------------|-----------|
-| hard | +1 day | `ease_factor` ↓ 0.20, `next_review_at = today + 1` |
-| medium | +1 day | `ease_factor` stays, `next_review_at = today + 1` |
-| easy | +3 days | `ease_factor` ↑ 0.15, `next_review_at = today + 3` |
+
+| Difficulty | Next Interval | DB Update                                          |
+| ---------- | ------------- | -------------------------------------------------- |
+| hard       | +1 day        | `ease_factor` ↓ 0.20, `next_review_at = today + 1` |
+| medium     | +1 day        | `ease_factor` stays, `next_review_at = today + 1`  |
+| easy       | +3 days       | `ease_factor` ↑ 0.15, `next_review_at = today + 3` |
 
 All changes executed atomically in PostgreSQL function `answer_flashcard(...)` (see design note §5.2 DB plan). API simply invokes the function.
 
 ### 4.3 Session Constraints
+
 - Only one active session per user enforced by partial index `uidx_active_session`.
 - Answers to cards outside active session → `409 Conflict`.
 
 ### 4.4 Global Error Handling
+
 - JSON problem-details format (`application/problem+json`).
 - Error payload: `type`, `title`, `status`, `detail`, `instance`.
 
-
 ## 5. Open Questions & Assumptions
+
 1. Email verification skipped for MVP; register endpoint still returns verification email if Supabase config enabled.
 2. `files` upload/download postponed; endpoints not included.
 3. Analytics events sent async to `/api/events` internal bus; not exposed publicly.
 4. Future AI endpoints will extend under `/api/ai/...`.
 5. **Batch operations:** AI-generated flashcards will use `/api/flashcards/batch` endpoint with appropriate rate limiting and validation.
 6. **Transaction handling:** Batch creates are atomic - if any card fails validation or would exceed user limits, entire batch is rejected.
-

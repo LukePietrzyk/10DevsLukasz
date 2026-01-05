@@ -122,6 +122,7 @@ flowchart TB
 ## Opis komponentów
 
 ### Strony Astro (SSR)
+
 - **`/auth/login.astro`** - Strona logowania, renderuje `LoginForm`
 - **`/auth/register.astro`** - Strona rejestracji, renderuje `RegisterForm`
 - **`/auth/forgot.astro`** - Strona resetu hasła, renderuje `ForgotForm`
@@ -131,6 +132,7 @@ flowchart TB
 - **`/settings`** - Ustawienia konta (wymaga autentykacji)
 
 ### Komponenty React (Client-side)
+
 - **`LoginForm.tsx`** - Formularz logowania z walidacją (email, password)
 - **`RegisterForm.tsx`** - Formularz rejestracji z walidacją (email, password, confirm)
 - **`ForgotForm.tsx`** - Formularz resetu hasła (email)
@@ -139,12 +141,14 @@ flowchart TB
 - **`Header.astro`** - Nagłówek z przyciskami logowania/wylogowania
 
 ### Auth Store (Zustand)
+
 - **`useAuthStore`** - Globalny store zarządzający stanem autentykacji
   - Stan: `user`, `loading`, `error`
   - Metody: `login()`, `register()`, `logout()`, `resetPassword()`, `updatePassword()`, `initialize()`
   - Mapowanie błędów Supabase na polskie komunikaty
 
 ### Middleware (Server-side)
+
 - **`middleware/index.ts`** - Middleware Astro
   - Pobiera sesję użytkownika z cookies
   - Sprawdza `context.locals.user`
@@ -152,49 +156,56 @@ flowchart TB
   - Przekierowuje na `/auth/login?redirect=...` jeśli brak autentykacji
 
 ### Supabase
+
 - **`supabase.client.ts`** - Klient Supabase (client-side i server-side)
 - **Supabase Auth API** - Operacje autentykacji
 - **PostgreSQL Database** - Baza danych z RLS (Row Level Security)
 
 ### Walidacja
+
 - **`auth.schemas.ts`** - Schematy Zod dla wszystkich formularzy
 - **React Hook Form** - Zarządzanie formularzami z integracją Zod
 
 ## Przepływy użytkownika
 
 ### 1. Rejestracja (US-001)
+
 ```
-Użytkownik → /auth/register → RegisterForm → useAuthStore.register() 
-→ Supabase Auth.signUp() → Email confirmation (opcjonalnie) 
+Użytkownik → /auth/register → RegisterForm → useAuthStore.register()
+→ Supabase Auth.signUp() → Email confirmation (opcjonalnie)
 → Auto-login lub komunikat → Redirect do /
 ```
 
 ### 2. Logowanie (US-002)
+
 ```
-Użytkownik → /auth/login → LoginForm → useAuthStore.login() 
-→ Supabase Auth.signInWithPassword() → JWT token w cookies 
+Użytkownik → /auth/login → LoginForm → useAuthStore.login()
+→ Supabase Auth.signInWithPassword() → JWT token w cookies
 → useAuthStore.user = user → Redirect do / lub redirect param
 ```
 
 ### 3. Reset hasła (US-006)
+
 ```
-Użytkownik → /auth/forgot → ForgotForm → useAuthStore.resetPassword() 
-→ Supabase Auth.resetPasswordForEmail() → Email z linkiem 
-→ /auth/reset#token → ResetForm → useAuthStore.updatePassword() 
+Użytkownik → /auth/forgot → ForgotForm → useAuthStore.resetPassword()
+→ Supabase Auth.resetPasswordForEmail() → Email z linkiem
+→ /auth/reset#token → ResetForm → useAuthStore.updatePassword()
 → Supabase Auth.updateUser() → Redirect do /auth/login
 ```
 
 ### 4. Wylogowanie (US-005)
+
 ```
-Użytkownik → Header → useAuthStore.logout() 
-→ Supabase Auth.signOut() → Clear cookies → useAuthStore.user = null 
+Użytkownik → Header → useAuthStore.logout()
+→ Supabase Auth.signOut() → Clear cookies → useAuthStore.user = null
 → Redirect do /auth/login
 ```
 
 ### 5. Ochrona dostępu (US-003, US-004)
+
 ```
-Użytkownik → /collections (bez logowania) → Middleware sprawdza user 
-→ Brak user → Redirect do /auth/login?redirect=/collections 
+Użytkownik → /collections (bez logowania) → Middleware sprawdza user
+→ Brak user → Redirect do /auth/login?redirect=/collections
 → Po zalogowaniu → Redirect do /collections
 ```
 
@@ -210,6 +221,7 @@ Użytkownik → /collections (bez logowania) → Middleware sprawdza user
 ## Zgodność z PRD
 
 Diagram pokrywa następujące wymagania z PRD:
+
 - **US-001**: Rejestracja konta ✅
 - **US-002**: Logowanie do aplikacji ✅
 - **US-003**: Kolekcje reguł (wymagają autentykacji) ✅
@@ -219,4 +231,3 @@ Diagram pokrywa następujące wymagania z PRD:
 - **US-007**: Zmiana hasła w ustawieniach konta ✅
 - **US-008**: Usunięcie konta i danych (wymaga endpointu API) ⚠️
 - **US-020**: Przegląd i edycja ustawień konta ✅
-

@@ -5,6 +5,7 @@
 Widok Lista fiszek (`/flashcards`) jest głównym ekranem aplikacji po zalogowaniu użytkownika. Umożliwia przeglądanie, wyszukiwanie, sortowanie i zarządzanie fiszkami użytkownika (CRUD). Widok jest responsywny - na desktopie wyświetla tabelę z 50 fiszkami na stronę, na mobile karty z 25 fiszkami na stronę.
 
 **Główne funkcjonalności:**
+
 - Wyświetlanie listy fiszek z paginacją
 - Wyszukiwanie po treści (front/back) z debouncingiem 300ms
 - Sortowanie po `created_at` lub `next_review_at` (asc/desc)
@@ -15,6 +16,7 @@ Widok Lista fiszek (`/flashcards`) jest głównym ekranem aplikacji po zalogowan
 - Obsługa stanów: ładowanie (skeleton), pusty stan, błędy
 
 **Pokryte User Stories:**
+
 - US-009: Przeglądanie listy fiszek
 - US-010: Wyszukiwanie fiszek po treści
 - US-011: Dodanie nowej fiszki ręcznie
@@ -33,6 +35,7 @@ Widok Lista fiszek (`/flashcards`) jest głównym ekranem aplikacji po zalogowan
 **Ochrona:** Wymaga autentykacji (middleware przekierowuje na `/auth/login` jeśli brak sesji)
 
 **Query parameters obsługiwane:**
+
 - `page` - numer strony (domyślnie 1)
 - `pageSize` - rozmiar strony (domyślnie 50 desktop / 25 mobile)
 - `search` - fraza wyszukiwania
@@ -68,6 +71,7 @@ FlashcardsPage (Astro)
 **Opis:** Główny komponent React zarządzający stanem listy fiszek, integracją z API przez React Query, oraz koordynacją wszystkich podkomponentów.
 
 **Główne elementy:**
+
 - Container div z Tailwind classes
 - FlashcardListHeader (pasek z wyszukiwaniem, sortowaniem, przyciskiem dodawania)
 - FlashcardListContent (warunkowe renderowanie: skeleton/empty/list)
@@ -77,6 +81,7 @@ FlashcardsPage (Astro)
 - ToastContainer (globalne powiadomienia)
 
 **Obsługiwane interakcje:**
+
 - Inicjalizacja: odczyt query parameters z URL, ustawienie domyślnych wartości
 - Zmiana wyszukiwania: debouncing 300ms, aktualizacja URL query params
 - Zmiana sortowania: aktualizacja URL query params, refetch danych
@@ -89,13 +94,15 @@ FlashcardsPage (Astro)
 - Usuń fiszkę: DELETE `/api/flashcards/{id}`, optimistic update, zamknięcie dialogu
 
 **Obsługiwana walidacja:**
+
 - Walidacja query parameters (przez FlashcardQuerySchema)
 - Walidacja formularza fiszki (przez CreateFlashcardSchema/UpdateFlashcardSchema)
 - Walidacja ID fiszki przy edycji/usuwaniu (UUID format)
 
 **Typy:**
+
 - Props: brak (komponent kontenerowy)
-- State: 
+- State:
   - `searchQuery: string` - lokalny stan wyszukiwania (przed debouncingiem)
   - `isCreateModalOpen: boolean` - stan modala tworzenia
   - `isEditModalOpen: boolean` - stan modala edycji
@@ -114,12 +121,14 @@ FlashcardsPage (Astro)
 **Opis:** Pasek z kontrolkami wyszukiwania, sortowania i przyciskiem dodawania fiszki.
 
 **Główne elementy:**
+
 - Flex container (desktop: row, mobile: column)
 - SearchBar (pole wyszukiwania z ikoną i przyciskiem clear)
 - SortSelect (Select Shadcn/ui z opcjami sortowania)
 - AddFlashcardButton (Button Shadcn/ui z ikoną plus)
 
 **Obsługiwane interakcje:**
+
 - Wprowadzanie tekstu w SearchBar: aktualizacja lokalnego stanu, debouncing 300ms, aktualizacja URL
 - Zmiana sortowania w SortSelect: aktualizacja URL query params
 - Kliknięcie AddFlashcardButton: otwarcie modala FlashcardForm w trybie create
@@ -127,6 +136,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak (walidacja na poziomie rodzica)
 
 **Typy:**
+
 - Props:
   - `searchValue: string` - aktualna wartość wyszukiwania
   - `onSearchChange: (value: string) => void` - callback zmiany wyszukiwania
@@ -143,11 +153,13 @@ FlashcardsPage (Astro)
 **Opis:** Pole wyszukiwania z debouncingiem i przyciskiem wyczyszczenia.
 
 **Główne elementy:**
+
 - Input Shadcn/ui z ikoną wyszukiwania (lucide-react Search)
 - Przycisk wyczyszczenia (X) widoczny gdy wartość nie jest pusta
 - Wrapper div z Tailwind classes
 
 **Obsługiwane interakcje:**
+
 - Wprowadzanie tekstu: aktualizacja wartości, wywołanie onChange po debouncingu 300ms
 - Kliknięcie przycisku clear: wyczyszczenie wartości, wywołanie onChange z pustym stringiem
 - Enter w polu: submit (opcjonalnie, może być zignorowane)
@@ -155,6 +167,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak (walidacja na poziomie API)
 
 **Typy:**
+
 - Props:
   - `value: string` - aktualna wartość
   - `onChange: (value: string) => void` - callback zmiany wartości (wywoływany po debouncingu)
@@ -168,18 +181,21 @@ FlashcardsPage (Astro)
 **Opis:** Select Shadcn/ui do wyboru pola i kierunku sortowania.
 
 **Główne elementy:**
+
 - Select Shadcn/ui z dwoma SelectItem:
   - Sortowanie po: "Data utworzenia" (created_at), "Data powtórki" (next_review_at)
   - Kierunek: "Rosnąco" (asc), "Malejąco" (desc)
 - Etykiety tekstowe
 
 **Obsługiwane interakcje:**
+
 - Wybór pola sortowania: wywołanie onSortChange
 - Wybór kierunku sortowania: wywołanie onOrderChange
 
 **Obsługiwana walidacja:** Brak (walidacja na poziomie rodzica)
 
 **Typy:**
+
 - Props:
   - `sortValue: "created_at" | "next_review_at"` - aktualne sortowanie
   - `orderValue: "asc" | "desc"` - aktualny kierunek
@@ -193,6 +209,7 @@ FlashcardsPage (Astro)
 **Opis:** Komponent warunkowo renderujący różne stany: skeleton loader, pusty stan, lub listę fiszek (tabela/karty).
 
 **Główne elementy:**
+
 - Warunkowe renderowanie:
   - `isLoading && <SkeletonLoader />`
   - `!isLoading && data.length === 0 && <EmptyState />`
@@ -203,6 +220,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak
 
 **Typy:**
+
 - Props:
   - `isLoading: boolean` - czy dane są ładowane
   - `flashcards: FlashcardEntity[]` - lista fiszek
@@ -217,6 +235,7 @@ FlashcardsPage (Astro)
 **Opis:** Tabela desktopowa wyświetlająca fiszki w formie wierszy.
 
 **Główne elementy:**
+
 - Table Shadcn/ui z nagłówkami kolumn:
   - Front (pytanie) - pełny tekst lub skrócony z "..."
   - Back (odpowiedź) - fragment (pierwsze 50 znaków) lub skrócony
@@ -226,6 +245,7 @@ FlashcardsPage (Astro)
 - TableBody z FlashcardTableRow[] dla każdej fiszki
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie "Edytuj": wywołanie onEdit z ID fiszki
 - Kliknięcie "Usuń": wywołanie onDelete z ID fiszki
 - Nawigacja klawiaturowa: ↑↓ między wierszami, Enter na wierszu = edycja
@@ -233,6 +253,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak
 
 **Typy:**
+
 - Props:
   - `flashcards: FlashcardEntity[]` - lista fiszek
   - `onEdit: (id: string) => void` - callback edycji
@@ -245,6 +266,7 @@ FlashcardsPage (Astro)
 **Opis:** Pojedynczy wiersz tabeli z danymi fiszki.
 
 **Główne elementy:**
+
 - TableRow Shadcn/ui z TableCell:
   - Front: tekst z truncate
   - Back: tekst z truncate
@@ -253,6 +275,7 @@ FlashcardsPage (Astro)
   - Actions: ButtonGroup z przyciskami Edytuj i Usuń
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie przycisku Edytuj: wywołanie onEdit
 - Kliknięcie przycisku Usuń: wywołanie onDelete
 - Hover: podświetlenie wiersza
@@ -260,6 +283,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak
 
 **Typy:**
+
 - Props:
   - `flashcard: FlashcardEntity` - dane fiszki
   - `onEdit: (id: string) => void` - callback edycji
@@ -272,6 +296,7 @@ FlashcardsPage (Astro)
 **Opis:** Lista kart mobile wyświetlająca fiszki w formie kart.
 
 **Główne elementy:**
+
 - Container div z grid layout (1 kolumna na mobile)
 - FlashcardCard[] dla każdej fiszki
 
@@ -280,6 +305,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak
 
 **Typy:**
+
 - Props:
   - `flashcards: FlashcardEntity[]` - lista fiszek
   - `onEdit: (id: string) => void` - callback edycji
@@ -292,12 +318,14 @@ FlashcardsPage (Astro)
 **Opis:** Pojedyncza karta mobile z danymi fiszki.
 
 **Główne elementy:**
+
 - Card Shadcn/ui z:
   - CardHeader: Front (pytanie) jako tytuł
   - CardContent: Back (odpowiedź) z truncate, Subject badge, Next Review data
   - CardFooter: przyciski Edytuj i Usuń
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie przycisku Edytuj: wywołanie onEdit
 - Kliknięcie przycisku Usuń: wywołanie onDelete
 - Tap na karcie: opcjonalnie otwarcie szczegółów (nie w MVP)
@@ -305,6 +333,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak
 
 **Typy:**
+
 - Props:
   - `flashcard: FlashcardEntity` - dane fiszki
   - `onEdit: (id: string) => void` - callback edycji
@@ -317,6 +346,7 @@ FlashcardsPage (Astro)
 **Opis:** Modal Dialog Shadcn/ui z formularzem tworzenia/edycji fiszki używający React Hook Form + Zod.
 
 **Główne elementy:**
+
 - Dialog Shadcn/ui z:
   - DialogHeader: tytuł ("Dodaj fiszkę" / "Edytuj fiszkę")
   - DialogContent: Form z React Hook Form:
@@ -330,6 +360,7 @@ FlashcardsPage (Astro)
     - "Zapisz" (Enter) / "Zapisz zmiany" (w trybie edit)
 
 **Obsługiwane interakcje:**
+
 - Wypełnianie formularza: walidacja inline przez React Hook Form
 - Submit formularza: walidacja, wywołanie API, optimistic update, zamknięcie modala
 - "Zapisz i dodaj kolejną": submit, zachowanie otwartego modala, wyczyszczenie formularza
@@ -337,6 +368,7 @@ FlashcardsPage (Astro)
 - Zamknięcie modala: ESC lub kliknięcie backdrop, ostrzeżenie o niezapisanych zmianach (nice-to-have)
 
 **Obsługiwana walidacja:**
+
 - Front: wymagane, 1-120 znaków (zgodnie z CreateFlashcardSchema)
 - Back: wymagane, 1-300 znaków (zgodnie z CreateFlashcardSchema)
 - Subject: opcjonalny, max 40 znaków (zgodnie z CreateFlashcardSchema)
@@ -344,6 +376,7 @@ FlashcardsPage (Astro)
 - GenerationId: wymagany dla AI sources, null dla manual (zgodnie z CreateFlashcardSchema)
 
 **Typy:**
+
 - Props:
   - `isOpen: boolean` - czy modal jest otwarty
   - `onClose: () => void` - callback zamknięcia modala
@@ -359,6 +392,7 @@ FlashcardsPage (Astro)
 **Opis:** AlertDialog Shadcn/ui z potwierdzeniem usunięcia fiszki.
 
 **Główne elementy:**
+
 - AlertDialog Shadcn/ui z:
   - AlertDialogHeader: tytuł "Usuń fiszkę"
   - AlertDialogContent: komunikat "Na pewno chcesz usunąć tę fiszkę? Tej operacji nie można cofnąć."
@@ -367,14 +401,17 @@ FlashcardsPage (Astro)
     - "Usuń" (variant: destructive) - potwierdzenie usunięcia
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie "Anuluj": zamknięcie dialogu
 - Kliknięcie "Usuń": wywołanie API DELETE, optimistic update, zamknięcie dialogu, toast sukcesu
 - ESC: zamknięcie dialogu
 
 **Obsługiwana walidacja:**
+
 - Weryfikacja ID fiszki (UUID format) przed wywołaniem API
 
 **Typy:**
+
 - Props:
   - `isOpen: boolean` - czy dialog jest otwarty
   - `onClose: () => void` - callback zamknięcia dialogu
@@ -389,6 +426,7 @@ FlashcardsPage (Astro)
 **Opis:** Placeholder ładowania wyświetlany podczas pobierania danych.
 
 **Główne elementy:**
+
 - Skeleton Shadcn/ui w formie:
   - Desktop: 10 wierszy tabeli z skeleton cells
   - Mobile: 5 kart z skeleton content
@@ -398,6 +436,7 @@ FlashcardsPage (Astro)
 **Obsługiwana walidacja:** Brak
 
 **Typy:**
+
 - Props:
   - `isMobile?: boolean` - czy widok mobile (domyślnie false)
 
@@ -408,6 +447,7 @@ FlashcardsPage (Astro)
 **Opis:** Ekran pustego stanu wyświetlany gdy użytkownik nie ma fiszek.
 
 **Główne elementy:**
+
 - Container div z centrowaniem
 - Ikona ilustracyjna (lucide-react FileQuestion lub podobna)
 - Nagłówek "Nie masz jeszcze fiszek"
@@ -415,11 +455,13 @@ FlashcardsPage (Astro)
 - Przycisk "Dodaj fiszkę" (Button Shadcn/ui)
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie "Dodaj fiszkę": otwarcie modala FlashcardForm w trybie create
 
 **Obsługiwana walidacja:** Brak
 
 **Typy:**
+
 - Props:
   - `onAddClick: () => void` - callback kliknięcia przycisku dodawania
 
@@ -430,6 +472,7 @@ FlashcardsPage (Astro)
 **Opis:** Komponent paginacji z przyciskami nawigacji.
 
 **Główne elementy:**
+
 - Container div z flex layout
 - Przycisk "Poprzednie" (disabled gdy page === 1)
 - Tekst "Strona X z Y" (lub podobny)
@@ -437,15 +480,18 @@ FlashcardsPage (Astro)
 - Opcjonalnie: Select do zmiany pageSize (desktop: 25/50, mobile: 10/25)
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie "Poprzednie": aktualizacja URL query params (page - 1)
 - Kliknięcie "Następne": aktualizacja URL query params (page + 1)
 - Zmiana pageSize: aktualizacja URL query params (pageSize, reset page do 1)
 
 **Obsługiwana walidacja:**
+
 - Weryfikacja page >= 1 i page <= totalPages
 - Weryfikacja pageSize w dozwolonych wartościach (10, 25, 50)
 
 **Typy:**
+
 - Props:
   - `page: number` - aktualna strona
   - `pageSize: number` - rozmiar strony
@@ -461,24 +507,26 @@ FlashcardsPage (Astro)
 ### Typy z `src/types.ts` (już istniejące)
 
 **FlashcardEntity:**
+
 ```typescript
 interface FlashcardEntity {
-  id: string;                    // UUID
-  front: string;                 // 1-120 znaków
-  back: string;                  // 1-300 znaków
-  subject: string | null;        // opcjonalny, max 40 znaków
-  source: FlashcardSource;       // "manual" | "ai-full" | "ai-edited"
-  generationId: string | null;   // UUID dla AI sources
-  nextReviewAt: string;          // ISO date string
-  lastReviewAt: string | null;   // ISO date string
-  reviewCount: number;           // liczba powtórek
-  easeFactor: number;            // współczynnik łatwości (2.5 default)
-  createdAt: string;             // ISO date string
-  updatedAt: string;             // ISO date string
+  id: string; // UUID
+  front: string; // 1-120 znaków
+  back: string; // 1-300 znaków
+  subject: string | null; // opcjonalny, max 40 znaków
+  source: FlashcardSource; // "manual" | "ai-full" | "ai-edited"
+  generationId: string | null; // UUID dla AI sources
+  nextReviewAt: string; // ISO date string
+  lastReviewAt: string | null; // ISO date string
+  reviewCount: number; // liczba powtórek
+  easeFactor: number; // współczynnik łatwości (2.5 default)
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
 }
 ```
 
 **FlashcardsListResponse:**
+
 ```typescript
 type FlashcardsListResponse = PaginatedResponseDto<FlashcardEntity>;
 
@@ -492,57 +540,62 @@ interface PaginatedResponseDto<T> {
 ```
 
 **FlashcardQueryDto:**
+
 ```typescript
 interface FlashcardQueryDto extends PaginationQueryDto {
-  search?: string;                                    // fraza wyszukiwania
-  subject?: string;                                    // filtr po subject
-  sort?: "created_at" | "next_review_at";              // pole sortowania
-  order?: "asc" | "desc";                             // kierunek sortowania
+  search?: string; // fraza wyszukiwania
+  subject?: string; // filtr po subject
+  sort?: "created_at" | "next_review_at"; // pole sortowania
+  order?: "asc" | "desc"; // kierunek sortowania
 }
 
 interface PaginationQueryDto {
-  page?: number;                                      // numer strony (1-based)
-  pageSize?: number;                                  // rozmiar strony (max 50)
-  limit?: number;                                     // alternatywa dla page/pageSize (max 100)
+  page?: number; // numer strony (1-based)
+  pageSize?: number; // rozmiar strony (max 50)
+  limit?: number; // alternatywa dla page/pageSize (max 100)
 }
 ```
 
 **CreateFlashcardDto:**
+
 ```typescript
 interface CreateFlashcardDto {
-  front: string;                                      // wymagane, 1-120 znaków
-  back: string;                                       // wymagane, 1-300 znaków
-  subject?: string;                                   // opcjonalny, max 40 znaków
-  source?: FlashcardSource;                           // opcjonalny, default "manual"
-  generationId?: string;                              // opcjonalny, wymagany dla AI sources
+  front: string; // wymagane, 1-120 znaków
+  back: string; // wymagane, 1-300 znaków
+  subject?: string; // opcjonalny, max 40 znaków
+  source?: FlashcardSource; // opcjonalny, default "manual"
+  generationId?: string; // opcjonalny, wymagany dla AI sources
 }
 ```
 
 **UpdateFlashcardDto:**
+
 ```typescript
 interface UpdateFlashcardDto {
-  front?: string;                                     // opcjonalny, 1-120 znaków
-  back?: string;                                      // opcjonalny, 1-300 znaków
-  subject?: string;                                   // opcjonalny, max 40 znaków
-  source?: FlashcardSource;                           // opcjonalny
-  generationId?: string;                              // opcjonalny
+  front?: string; // opcjonalny, 1-120 znaków
+  back?: string; // opcjonalny, 1-300 znaków
+  subject?: string; // opcjonalny, max 40 znaków
+  source?: FlashcardSource; // opcjonalny
+  generationId?: string; // opcjonalny
 }
 ```
 
 **ApiErrorResponse:**
+
 ```typescript
 interface ApiErrorResponse {
-  type: string;                                       // kod błędu (np. "validation_error")
-  title: string;                                      // tytuł błędu
-  status: number;                                     // kod HTTP
-  detail: string;                                     // szczegóły błędu
-  instance?: string;                                  // opcjonalny, ścieżka requestu
+  type: string; // kod błędu (np. "validation_error")
+  title: string; // tytuł błędu
+  status: number; // kod HTTP
+  detail: string; // szczegóły błędu
+  instance?: string; // opcjonalny, ścieżka requestu
 }
 ```
 
 ### Nowe typy ViewModel (opcjonalne, dla komponentów)
 
 **FlashcardFormData:**
+
 ```typescript
 interface FlashcardFormData {
   front: string;
@@ -552,9 +605,10 @@ interface FlashcardFormData {
 ```
 
 **FlashcardListState:**
+
 ```typescript
 interface FlashcardListState {
-  searchQuery: string;                                // lokalny stan wyszukiwania (przed debouncingiem)
+  searchQuery: string; // lokalny stan wyszukiwania (przed debouncingiem)
   isCreateModalOpen: boolean;
   isEditModalOpen: boolean;
   editingFlashcardId: string | null;
@@ -568,24 +622,26 @@ interface FlashcardListState {
 
 **Query Key:** `['flashcards', queryParams]` gdzie `queryParams` to obiekt FlashcardQueryDto
 
-**Query Function:** 
+**Query Function:**
+
 ```typescript
 async (queryParams: FlashcardQueryDto) => {
   const params = new URLSearchParams();
-  if (queryParams.page) params.set('page', queryParams.page.toString());
-  if (queryParams.pageSize) params.set('pageSize', queryParams.pageSize.toString());
-  if (queryParams.search) params.set('search', queryParams.search);
-  if (queryParams.subject) params.set('subject', queryParams.subject);
-  if (queryParams.sort) params.set('sort', queryParams.sort);
-  if (queryParams.order) params.set('order', queryParams.order);
-  
+  if (queryParams.page) params.set("page", queryParams.page.toString());
+  if (queryParams.pageSize) params.set("pageSize", queryParams.pageSize.toString());
+  if (queryParams.search) params.set("search", queryParams.search);
+  if (queryParams.subject) params.set("subject", queryParams.subject);
+  if (queryParams.sort) params.set("sort", queryParams.sort);
+  if (queryParams.order) params.set("order", queryParams.order);
+
   const response = await fetch(`/api/flashcards?${params.toString()}`);
-  if (!response.ok) throw new Error('Failed to fetch flashcards');
+  if (!response.ok) throw new Error("Failed to fetch flashcards");
   return response.json() as Promise<FlashcardsListResponse>;
-}
+};
 ```
 
 **Query Options:**
+
 - `keepPreviousData: true` - dla płynnej paginacji
 - `staleTime: 60000` - dane są świeże przez 1 minutę
 - `cacheTime: 300000` - cache przez 5 minut
@@ -612,6 +668,7 @@ async (queryParams: FlashcardQueryDto) => {
 ### Local State (React useState)
 
 **W komponencie FlashcardList:**
+
 - `searchQuery: string` - lokalny stan wyszukiwania (przed debouncingiem)
 - `isCreateModalOpen: boolean` - stan modala tworzenia
 - `isEditModalOpen: boolean` - stan modala edycji
@@ -621,24 +678,26 @@ async (queryParams: FlashcardQueryDto) => {
 ### URL State (query parameters)
 
 **Synchronizacja z URL:**
+
 - Odczyt query parameters przy mountcie komponentu
 - Aktualizacja URL przy zmianie filtrów/sortowania/paginacji (przez `useNavigate` lub `window.history.pushState`)
 - Obsługa przycisku wstecz/przód przeglądarki (przez `popstate` event)
 
 **Custom Hook: `useFlashcardQueryParams`**
+
 ```typescript
 function useFlashcardQueryParams() {
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const queryParams: FlashcardQueryDto = {
-    page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
-    pageSize: searchParams.get('pageSize') ? parseInt(searchParams.get('pageSize')!) : (isMobile ? 25 : 50),
-    search: searchParams.get('search') || undefined,
-    subject: searchParams.get('subject') || undefined,
-    sort: (searchParams.get('sort') as "created_at" | "next_review_at") || "created_at",
-    order: (searchParams.get('order') as "asc" | "desc") || "desc",
+    page: searchParams.get("page") ? parseInt(searchParams.get("page")!) : 1,
+    pageSize: searchParams.get("pageSize") ? parseInt(searchParams.get("pageSize")!) : isMobile ? 25 : 50,
+    search: searchParams.get("search") || undefined,
+    subject: searchParams.get("subject") || undefined,
+    sort: (searchParams.get("sort") as "created_at" | "next_review_at") || "created_at",
+    order: (searchParams.get("order") as "asc" | "desc") || "desc",
   };
-  
+
   const updateQueryParams = (updates: Partial<FlashcardQueryDto>) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
@@ -650,7 +709,7 @@ function useFlashcardQueryParams() {
     });
     setSearchParams(newParams);
   };
-  
+
   return { queryParams, updateQueryParams };
 }
 ```
@@ -658,14 +717,17 @@ function useFlashcardQueryParams() {
 ### Custom Hooks
 
 **`useDebounce<T>(value: T, delay: number): T`**
+
 - Hook do debouncingu wartości (używany dla wyszukiwania)
 - Implementacja: `useState` + `useEffect` z `setTimeout`
 
 **`useMediaQuery(query: string): boolean`**
+
 - Hook do wykrywania rozmiaru ekranu (mobile/desktop)
 - Implementacja: `useState` + `useEffect` z `window.matchMedia`
 
 **`useFlashcardMutations()`**
+
 - Hook zwracający mutations dla create/update/delete
 - Implementacja: `useMutation` z React Query
 
@@ -674,11 +736,13 @@ function useFlashcardQueryParams() {
 ### GET `/api/flashcards`
 
 **Request:**
+
 - Method: GET
 - URL: `/api/flashcards?page=1&pageSize=50&search=test&sort=created_at&order=desc`
 - Headers: Authorization Bearer token (automatycznie przez Supabase client)
 
 **Response (200 OK):**
+
 ```json
 {
   "data": [
@@ -705,20 +769,23 @@ function useFlashcardQueryParams() {
 ```
 
 **Error Responses:**
+
 - 400 Bad Request: nieprawidłowe query parameters
 - 500 Internal Server Error: błąd serwera
 
 ### POST `/api/flashcards`
 
 **Request:**
+
 - Method: POST
 - URL: `/api/flashcards`
-- Headers: 
+- Headers:
   - `Content-Type: application/json`
   - Authorization Bearer token
 - Body: `CreateFlashcardDto`
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "uuid",
@@ -737,6 +804,7 @@ function useFlashcardQueryParams() {
 ```
 
 **Error Responses:**
+
 - 400 Bad Request: walidacja nie powiodła się
 - 409 Conflict: limit 2000 fiszek przekroczony
 - 500 Internal Server Error: błąd serwera
@@ -744,11 +812,13 @@ function useFlashcardQueryParams() {
 ### GET `/api/flashcards/{id}`
 
 **Request:**
+
 - Method: GET
 - URL: `/api/flashcards/{id}`
 - Headers: Authorization Bearer token
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "uuid",
@@ -767,6 +837,7 @@ function useFlashcardQueryParams() {
 ```
 
 **Error Responses:**
+
 - 400 Bad Request: nieprawidłowy UUID
 - 404 Not Found: fiszka nie znaleziona
 - 500 Internal Server Error: błąd serwera
@@ -774,14 +845,16 @@ function useFlashcardQueryParams() {
 ### PATCH `/api/flashcards/{id}`
 
 **Request:**
+
 - Method: PATCH
 - URL: `/api/flashcards/{id}`
-- Headers: 
+- Headers:
   - `Content-Type: application/json`
   - Authorization Bearer token
 - Body: `UpdateFlashcardDto` (partial)
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "uuid",
@@ -800,6 +873,7 @@ function useFlashcardQueryParams() {
 ```
 
 **Error Responses:**
+
 - 400 Bad Request: walidacja nie powiodła się lub brak pól do aktualizacji
 - 404 Not Found: fiszka nie znaleziona
 - 500 Internal Server Error: błąd serwera
@@ -807,14 +881,17 @@ function useFlashcardQueryParams() {
 ### DELETE `/api/flashcards/{id}`
 
 **Request:**
+
 - Method: DELETE
 - URL: `/api/flashcards/{id}`
 - Headers: Authorization Bearer token
 
 **Response (204 No Content):**
+
 - Brak body
 
 **Error Responses:**
+
 - 400 Bad Request: nieprawidłowy UUID
 - 404 Not Found: fiszka nie znaleziona
 - 500 Internal Server Error: błąd serwera
@@ -923,6 +1000,7 @@ function useFlashcardQueryParams() {
 ### Walidacja query parameters
 
 **W komponencie FlashcardList przy mountcie:**
+
 - Odczyt query parameters z URL
 - Walidacja przez `FlashcardQuerySchema` (Zod)
 - Ustawienie domyślnych wartości jeśli brak parametrów:
@@ -933,12 +1011,14 @@ function useFlashcardQueryParams() {
 - Jeśli parametry nieprawidłowe: wyświetlenie błędu, ustawienie domyślnych wartości
 
 **Przy zmianie parametrów:**
+
 - Walidacja przed aktualizacją URL
 - Jeśli nieprawidłowe: wyświetlenie błędu, brak aktualizacji URL
 
 ### Walidacja formularza fiszki
 
 **W komponencie FlashcardForm:**
+
 - Walidacja przez React Hook Form z integracją Zod (`CreateFlashcardSchema` / `UpdateFlashcardSchema`)
 - Walidacja inline przy blur każdego pola
 - Komunikaty błędów pod polami:
@@ -948,32 +1028,39 @@ function useFlashcardQueryParams() {
 - Walidacja przed submit: sprawdzenie wszystkich pól, blokada submit jeśli błędy
 
 **Walidacja po stronie API:**
+
 - API zwraca 400 Bad Request z szczegółami błędów jeśli walidacja nie powiodła się
 - Frontend wyświetla błędy z API w formularzu (pod odpowiednimi polami)
 
 ### Walidacja ID fiszki
 
 **Przy edycji/usuwaniu:**
+
 - Weryfikacja formatu UUID przed wywołaniem API
 - Jeśli nieprawidłowy: wyświetlenie błędu, brak wywołania API
 
 ### Warunki wyświetlania
 
 **SkeletonLoader:**
+
 - Wyświetlany gdy `isLoading === true` w React Query
 
 **EmptyState:**
+
 - Wyświetlany gdy `!isLoading && data.length === 0`
 
 **FlashcardTable / FlashcardCardList:**
+
 - Wyświetlany gdy `!isLoading && data.length > 0`
 
 **Pagination:**
+
 - Wyświetlany gdy `totalPages > 1`
 - Przycisk "Poprzednie" disabled gdy `page === 1`
 - Przycisk "Następne" disabled gdy `page === totalPages`
 
 **Przycisk "Zapisz i dodaj kolejną":**
+
 - Widoczny tylko w trybie create
 - Ukryty w trybie edit
 
@@ -982,31 +1069,37 @@ function useFlashcardQueryParams() {
 ### Błędy API
 
 **400 Bad Request (walidacja):**
+
 - Wyświetlenie błędów walidacji w formularzu (pod odpowiednimi polami)
 - Toast z komunikatem "Sprawdź błędy w formularzu"
 - Zachowanie danych w formularzu
 
 **403 Forbidden:**
+
 - Toast z komunikatem "Brak dostępu do tej fiszki"
 - Zamknięcie modala/dialogu
 - Przekierowanie na `/flashcards` (opcjonalnie)
 
 **404 Not Found:**
+
 - Toast z komunikatem "Fiszka nie została znaleziona"
 - Zamknięcie modala/dialogu
 - Refetch listy fiszek
 
 **409 Conflict (limit 2000 fiszek):**
+
 - Toast z komunikatem "Osiągnięto limit 2000 fiszek. Usuń niektóre fiszki, aby dodać nowe."
 - Wyświetlenie ErrorMessage z zachętą do porządków
 - Zamknięcie modala (jeśli otwarty)
 
 **429 Too Many Requests (rate limiting):**
+
 - Toast z komunikatem "Zbyt wiele żądań. Spróbuj ponownie za chwilę."
 - Exponential backoff dla automatycznych ponownych prób (opcjonalnie)
 - Wyświetlenie ErrorMessage z informacją o odczekaniu
 
 **500 Internal Server Error:**
+
 - Toast z komunikatem "Wystąpił błąd serwera. Spróbuj ponownie."
 - Wyświetlenie ErrorMessage z przyciskiem "Spróbuj ponownie"
 - Zachowanie danych w formularzu (jeśli dotyczy)
@@ -1014,12 +1107,14 @@ function useFlashcardQueryParams() {
 ### Błędy sieciowe
 
 **Brak połączenia (offline):**
+
 - Wykrywanie przez `navigator.onLine` lub failed fetch
 - Wyświetlenie ErrorMessage z komunikatem "Brak połączenia z internetem"
 - Blokada akcji wymagających komunikacji z serwerem
 - Próba automatycznego ponowienia po odzyskaniu połączenia
 
 **Timeout:**
+
 - Wykrywanie przez timeout w fetch (opcjonalnie, przez AbortController)
 - Toast z komunikatem "Przekroczono limit czasu. Spróbuj ponownie."
 - Wyświetlenie ErrorMessage z przyciskiem "Spróbuj ponownie"
@@ -1027,11 +1122,13 @@ function useFlashcardQueryParams() {
 ### Błędy walidacji formularza
 
 **Błędy inline:**
+
 - Wyświetlenie pod każdym polem z błędem
 - Podświetlenie pola na czerwono
 - Blokada submit formularza
 
 **Błędy z API:**
+
 - Mapowanie błędów z ApiErrorResponse na pola formularza
 - Wyświetlenie pod odpowiednimi polami
 - Toast z ogólnym komunikatem błędu
@@ -1039,6 +1136,7 @@ function useFlashcardQueryParams() {
 ### Optimistic Updates
 
 **Wycofanie optimistic update przy błędzie:**
+
 - W `onError` mutation: wywołanie `queryClient.setQueryData` z poprzednimi danymi
 - Wyświetlenie błędu użytkownikowi
 - Toast z komunikatem błędu
@@ -1046,6 +1144,7 @@ function useFlashcardQueryParams() {
 ### Error Boundary
 
 **Globalny Error Boundary:**
+
 - Przechwytywanie nieobsłużonych błędów React
 - Wyświetlenie ekranu "Coś poszło nie tak. Spróbuj odświeżyć stronę."
 - Zapisywanie logów błędu (konsola lub endpoint backendowy)
@@ -1150,4 +1249,3 @@ function useFlashcardQueryParams() {
 1. Dodanie komentarzy JSDoc do komponentów
 2. Sprawdzenie zgodności z linterem
 3. Aktualizacja dokumentacji projektu (jeśli potrzeba)
-

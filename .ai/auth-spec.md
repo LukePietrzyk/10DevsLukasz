@@ -17,6 +17,7 @@ Niniejsza specyfikacja opisuje architekturę modułu rejestracji, logowania, wyl
 ### 1.1 Zakres funkcjonalny
 
 Moduł autentykacji obejmuje:
+
 - Rejestrację konta użytkownika (email + hasło)
 - Logowanie do systemu
 - Wylogowanie z systemu
@@ -44,6 +45,7 @@ Moduł autentykacji obejmuje:
 #### 2.1.1 Strony autentykacji (już istniejące, wymagają rozszerzenia)
 
 **`src/pages/auth/login.astro`**
+
 - **Status**: Istnieje, wymaga uzupełnienia komponentu `LoginForm`
 - **Funkcjonalność**:
   - Renderuje formularz logowania (React component)
@@ -56,6 +58,7 @@ Moduł autentykacji obejmuje:
   - Obsługa błędów autentykacji
 
 **`src/pages/auth/register.astro`**
+
 - **Status**: Istnieje, komponent `RegisterForm` zaimplementowany
 - **Funkcjonalność**:
   - Formularz rejestracji z polami: email, password, confirm password
@@ -67,6 +70,7 @@ Moduł autentykacji obejmuje:
   - Obsługa błędów Supabase (istniejący email, słabe hasło, itp.)
 
 **`src/pages/auth/forgot.astro`**
+
 - **Status**: Istnieje, wymaga uzupełnienia komponentu `ForgotForm`
 - **Funkcjonalność**:
   - Formularz z polem email
@@ -78,6 +82,7 @@ Moduł autentykacji obejmuje:
   - Obsługa błędów (nieistniejący email - neutralna odpowiedź)
 
 **`src/pages/auth/reset.astro`**
+
 - **Status**: Istnieje, wymaga uzupełnienia komponentu `ResetForm`
 - **Funkcjonalność**:
   - Formularz ustawienia nowego hasła (password, confirm password)
@@ -91,6 +96,7 @@ Moduł autentykacji obejmuje:
 #### 2.1.2 Główny layout aplikacji
 
 **`src/layouts/Layout.astro`** (wymaga rozbudowy)
+
 - **Status**: Istnieje w podstawowej formie, wymaga dodania nawigacji
 - **Funkcjonalność**:
   - Główny layout dla wszystkich stron aplikacji
@@ -106,6 +112,7 @@ Moduł autentykacji obejmuje:
   - Integracja z middleware do pobrania danych użytkownika
 
 **`src/layouts/AuthLayout.astro`** (nowy, opcjonalny)
+
 - **Funkcjonalność**:
   - Uproszczony layout dla stron autentykacji
   - Brak nawigacji głównej
@@ -117,16 +124,19 @@ Moduł autentykacji obejmuje:
 #### 2.1.3 Strony chronione
 
 **Strony wymagające autentykacji** (przykłady):
+
 - `/collections` - Kolekcje reguł (US-003)
 - `/settings` - Ustawienia konta
 - `/dashboard` - Dashboard użytkownika (jeśli istnieje)
 
 **Mechanizm ochrony**:
+
 - Middleware sprawdza autentykację przed renderowaniem
 - Przekierowanie na `/auth/login?redirect=/collections` jeśli brak autentykacji
 - Po zalogowaniu przekierowanie na oryginalną ścieżkę
 
 **Strony dostępne bez autentykacji**:
+
 - `/` - Strona główna
 - `/auth/*` - Wszystkie strony autentykacji
 - `/flashcards/generate` - Generowanie fiszek (jeśli dostępne bez logowania)
@@ -137,6 +147,7 @@ Moduł autentykacji obejmuje:
 #### 2.2.1 Formularze autentykacji
 
 **`src/components/auth/LoginForm.tsx`** (wymaga utworzenia)
+
 - **Funkcjonalność**:
   - Formularz logowania: email, password
   - Przycisk "Zaloguj się"
@@ -157,6 +168,7 @@ Moduł autentykacji obejmuje:
   - Rate limiting: "Zbyt wiele prób. Spróbuj ponownie za chwilę."
 
 **`src/components/auth/RegisterForm.tsx`** (istnieje, wymaga weryfikacji)
+
 - **Status**: Zaimplementowany
 - **Funkcjonalność**:
   - Formularz: email, password, confirm password
@@ -171,6 +183,7 @@ Moduł autentykacji obejmuje:
   - Jeśli potwierdzone: automatyczne przekierowanie na dashboard
 
 **`src/components/auth/ForgotForm.tsx`** (wymaga utworzenia)
+
 - **Funkcjonalność**:
   - Formularz: email
   - Przycisk "Wyślij link resetujący"
@@ -185,6 +198,7 @@ Moduł autentykacji obejmuje:
   - Rate limiting
 
 **`src/components/auth/ResetForm.tsx`** (wymaga utworzenia)
+
 - **Funkcjonalność**:
   - Formularz: password, confirm password
   - Pobranie tokenu z URL (hash fragment)
@@ -201,6 +215,7 @@ Moduł autentykacji obejmuje:
   - "Hasło musi mieć co najmniej 8 znaków"
 
 **`src/components/auth/ChangePasswordForm.tsx`** (wymaga utworzenia, dla US-007)
+
 - **Funkcjonalność**:
   - Formularz zmiany hasła w ustawieniach konta
   - Pola: currentPassword, newPassword, confirmPassword
@@ -221,6 +236,7 @@ Moduł autentykacji obejmuje:
 #### 2.2.2 Komponenty nawigacji
 
 **`src/components/navigation/Header.astro`** (nowy)
+
 - **Funkcjonalność**:
   - Nagłówek aplikacji z nawigacją
   - Logo/nazwa aplikacji (lewa strona)
@@ -235,6 +251,7 @@ Moduł autentykacji obejmuje:
   - Linki do odpowiednich stron
 
 **`src/components/navigation/AuthButton.tsx`** (nowy, opcjonalny)
+
 - **Funkcjonalność**:
   - Przycisk logowania/wylogowania
   - Wyświetla "Zaloguj się" lub "Wyloguj" w zależności od stanu
@@ -247,6 +264,7 @@ Moduł autentykacji obejmuje:
 #### 2.2.3 Komponenty ochrony dostępu
 
 **`src/components/auth/ProtectedRoute.tsx`** (nowy, opcjonalny)
+
 - **Funkcjonalność**:
   - Wrapper dla komponentów wymagających autentykacji
   - Sprawdza `useAuthStore.user`
@@ -257,6 +275,7 @@ Moduł autentykacji obejmuje:
   - Alternatywa dla server-side middleware (dla dynamicznych komponentów)
 
 **`src/components/auth/AuthGuard.astro`** (nowy)
+
 - **Funkcjonalność**:
   - Server-side wrapper dla stron Astro wymagających autentykacji
   - Sprawdza `context.locals.user` z middleware
@@ -271,6 +290,7 @@ Moduł autentykacji obejmuje:
 #### 2.3.1 Schematy walidacji (Zod)
 
 **`src/lib/validations/auth.schemas.ts`** (nowy)
+
 - **Schematy**:
   - `loginSchema`: `{ email: string().email(), password: string().min(1) }`
   - `registerSchema`: `{ email: string().email(), password: string().min(8), confirm: string() }` + refine dla zgodności haseł
@@ -281,6 +301,7 @@ Moduł autentykacji obejmuje:
 #### 2.3.2 Mapowanie błędów Supabase
 
 **`src/lib/stores/auth.store.ts`** (istnieje, wymaga rozszerzenia)
+
 - **Funkcja `mapAuthError`**:
   - Mapuje błędy Supabase na polskie komunikaty
   - Obsługiwane błędy:
@@ -370,6 +391,7 @@ Moduł autentykacji obejmuje:
 #### 3.1.2 Wymagane rozszerzenia
 
 **Funkcjonalność**:
+
 1. **Pobieranie sesji użytkownika**:
    - Odczytanie cookies z requestu (Supabase Auth używa cookies)
    - Weryfikacja sesji przez `supabase.auth.getUser()` lub `supabase.auth.getSession()`
@@ -387,6 +409,7 @@ Moduł autentykacji obejmuje:
    - `context.locals.requireAuth()`: funkcja pomocnicza do wymuszania autentykacji
 
 **Implementacja**:
+
 ```typescript
 export const onRequest = defineMiddleware(async (context, next) => {
   // Pobranie Supabase client
@@ -405,10 +428,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.isAuthenticated = !!user;
 
   // Lista chronionych ścieżek
-  const protectedPaths = ['/collections', '/settings', '/dashboard'];
-  const isProtectedPath = protectedPaths.some(path => 
-    context.url.pathname.startsWith(path)
-  );
+  const protectedPaths = ["/collections", "/settings", "/dashboard"];
+  const isProtectedPath = protectedPaths.some((path) => context.url.pathname.startsWith(path));
 
   // Sprawdzenie autentykacji dla chronionych ścieżek
   if (isProtectedPath && !user) {
@@ -419,7 +440,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Helper do wymuszania autentykacji
   context.locals.requireAuth = () => {
     if (!user) {
-      throw new Error('Authentication required');
+      throw new Error("Authentication required");
     }
     return user;
   };
@@ -439,6 +460,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 #### 3.2.1 Endpoint usuwania konta (US-008)
 
 **`src/pages/api/auth/delete-account.ts`** (wymagany dla US-008)
+
 - **Metoda**: DELETE
 - **Autentykacja**: Wymagana (JWT token)
 - **Funkcjonalność**:
@@ -495,14 +517,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
 **Plik konfiguracyjny**: `supabase/config.toml` (lub dashboard Supabase)
 
 **Wymagane ustawienia**:
+
 - **Email Auth**: Włączone
 - **Email Confirmation**: Opcjonalne w MVP (można wyłączyć dla szybszego developmentu)
 - **Password Reset**: Włączone
 - **Site URL**: URL aplikacji (np. `http://localhost:3000` dla developmentu)
-- **Redirect URLs**: 
+- **Redirect URLs**:
   - `http://localhost:3000/auth/reset` (development)
   - `https://yourdomain.com/auth/reset` (production)
-- **Rate Limiting**: 
+- **Rate Limiting**:
   - Logowanie: 5 prób/minutę na IP
   - Reset hasła: 3 próby/godzinę na email
 
@@ -511,30 +534,38 @@ export const onRequest = defineMiddleware(async (context, next) => {
 **`src/db/supabase.client.ts`** (istnieje)
 
 **Client-side** (`supabase`):
+
 - Używany w komponentach React
 - Automatycznie zarządza sesjami (cookies/localStorage)
 - Metody: `auth.signUp()`, `auth.signInWithPassword()`, `auth.signOut()`, `auth.resetPasswordForEmail()`, `auth.updateUser()`
 
 **Server-side** (`supabaseClient`):
+
 - Używany w middleware i endpointach API
 - Wymaga ręcznego przekazania cookies z requestu
 - Metody: `auth.getUser()`, `auth.getSession()`
 
 **Rozszerzenie** (wymagane):
+
 - Utworzenie helpera do pobierania sesji server-side z cookies:
+
 ```typescript
 export async function getServerSession(request: Request): Promise<Session | null> {
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
-        return request.headers.get('cookie')?.split(';')
-          .find(c => c.trim().startsWith(`${name}=`))
-          ?.split('=')[1];
+        return request.headers
+          .get("cookie")
+          ?.split(";")
+          .find((c) => c.trim().startsWith(`${name}=`))
+          ?.split("=")[1];
       },
     },
   });
-  
-  const { data: { session } } = await supabase.auth.getSession();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   return session;
 }
 ```
@@ -546,11 +577,13 @@ export async function getServerSession(request: Request): Promise<Session | null
 **`src/lib/stores/auth.store.ts`** (istnieje, wymaga weryfikacji)
 
 **Stan**:
+
 - `user: User | null` - aktualny użytkownik
 - `loading: boolean` - czy trwa operacja autentykacji
 - `error: string | null` - komunikat błędu
 
 **Metody**:
+
 - `login(email, password)` - logowanie
 - `register(email, password)` - rejestracja
 - `logout()` - wylogowanie
@@ -560,6 +593,7 @@ export async function getServerSession(request: Request): Promise<Session | null
 - `clearError()` - wyczyszczenie błędu
 
 **Inicjalizacja**:
+
 - Wywołanie `initialize()` w komponencie root (np. w `Layout.astro` lub `App.tsx`)
 - Sprawdzenie czy użytkownik ma aktywną sesję
 - Aktualizacja stanu `user`
@@ -573,12 +607,14 @@ export async function getServerSession(request: Request): Promise<Session | null
 ### 4.3 Tokeny JWT
 
 **Zarządzanie przez Supabase**:
+
 - Supabase automatycznie generuje i zarządza tokenami JWT
 - Tokeny są przechowywane w cookies (httpOnly dla bezpieczeństwa)
 - Tokeny są automatycznie odświeżane przez Supabase SDK
 - Wygasanie tokenów: domyślnie 1 godzina (można skonfigurować)
 
 **Weryfikacja**:
+
 - Client-side: automatyczna przez Supabase SDK
 - Server-side: przez `supabase.auth.getUser()` w middleware
 
@@ -587,31 +623,37 @@ export async function getServerSession(request: Request): Promise<Session | null
 #### 4.4.1 Ochrona przed atakami
 
 **Rate Limiting**:
+
 - Logowanie: 5 prób/minutę na IP (konfiguracja Supabase)
 - Reset hasła: 3 próby/godzinę na email
 - Rejestracja: 3 próby/godzinę na IP
 
 **Brute Force Protection**:
+
 - Supabase automatycznie blokuje podejrzane próby logowania
 - Komunikaty błędów nie ujawniają, czy email istnieje (neutralna odpowiedź)
 
 **XSS Protection**:
+
 - Sanityzacja danych wejściowych (automatyczna przez React)
 - Escape HTML w komunikatach błędów
 - Używanie Shadcn/ui komponentów (automatyczna sanitizacja)
 
 **CSRF Protection**:
+
 - Supabase używa cookies z flagą `SameSite=Strict`
 - Tokeny JWT w cookies (nie w localStorage dla wrażliwych operacji)
 
 #### 4.4.2 Hasła
 
 **Wymagania**:
+
 - Minimum 8 znaków (walidacja po stronie klienta)
 - Hashowanie przez Supabase (bcrypt/argon2)
 - Hasła nigdy nie są logowane ani przechowywane w plain text
 
 **Reset hasła**:
+
 - Tokeny jednorazowe (single-use)
 - Wygasanie tokenów: 1 godzina (konfigurowalne)
 - Linki resetujące zawierają hash token w URL
@@ -625,12 +667,14 @@ export async function getServerSession(request: Request): Promise<Session | null
 #### 5.1.1 Fiszki (Flashcards)
 
 **Dostęp bez logowania** (zgodnie z PRD, sekcja 3.1):
+
 - Użytkownik może tworzyć fiszki "ad-hoc" bez logowania (funkcjonalność podstawowa dostępna dla wszystkich)
 - Fiszki ad-hoc nie są zapisywane w bazie (lub są zapisywane jako tymczasowe w localStorage/sessionStorage)
 - Po zalogowaniu: możliwość zapisania fiszek ad-hoc do konta (migracja z localStorage do bazy)
 - **Uwaga**: W US-004 PRD jest błędna referencja do "reguł ad-hoc (US-001)" - w rzeczywistości chodzi o "fiszki ad-hoc" zgodnie z sekcją 3.1 PRD
 
 **Dostęp z logowaniem**:
+
 - Fiszki są przypisane do `user_id`
 - RLS (Row Level Security) w Supabase zapewnia izolację danych
 - API endpointy sprawdzają `context.locals.userId`
@@ -638,11 +682,13 @@ export async function getServerSession(request: Request): Promise<Session | null
 #### 5.1.2 Kolekcje reguł (US-003)
 
 **Wymagana autentykacja**:
+
 - Funkcjonalność kolekcji jest dostępna TYLKO dla zalogowanych użytkowników (US-004, kryterium akceptacji)
 - Middleware przekierowuje na `/auth/login?redirect=/collections` jeśli brak autentykacji
 - Komponenty React sprawdzają `useAuthStore.user` przed renderowaniem
 
 **Implementacja**:
+
 - Strona `/collections` wymaga autentykacji (middleware)
 - Komponenty kolekcji używają `context.locals.userId` do zapytań do API
 - RLS w Supabase zapewnia dostęp tylko do własnych kolekcji
@@ -654,12 +700,14 @@ export async function getServerSession(request: Request): Promise<Session | null
 #### 5.2.1 Layout.astro
 
 **Wymagane zmiany**:
+
 1. Dodanie nagłówka z nawigacją
 2. Integracja z `Header.astro` (lub bezpośrednia implementacja)
 3. Renderowanie warunkowe przycisków logowania/wylogowania
 4. Sprawdzenie `Astro.locals.user` (server-side)
 
 **Przykład**:
+
 ```astro
 ---
 import Header from "../components/navigation/Header.astro";
@@ -676,6 +724,7 @@ const user = Astro.locals.user;
 #### 5.2.2 Middleware
 
 **Wymagane zmiany**:
+
 1. Pobieranie sesji użytkownika z cookies
 2. Zapisanie `user` w `context.locals.user`
 3. Ochrona chronionych ścieżek
@@ -684,6 +733,7 @@ const user = Astro.locals.user;
 ### 5.3 Nowe pliki i moduły
 
 **Nowe pliki do utworzenia**:
+
 1. `src/components/auth/LoginForm.tsx` (US-002)
 2. `src/components/auth/ForgotForm.tsx` (US-006)
 3. `src/components/auth/ResetForm.tsx` (US-006)
@@ -697,6 +747,7 @@ const user = Astro.locals.user;
 11. `src/pages/api/auth/delete-account.ts` (US-008) - endpoint usuwania konta
 
 **Pliki do modyfikacji**:
+
 1. `src/middleware/index.ts` - rozbudowa o autentykację
 2. `src/layouts/Layout.astro` - dodanie nawigacji
 3. `src/lib/stores/auth.store.ts` - weryfikacja i ewentualne poprawki
@@ -709,6 +760,7 @@ const user = Astro.locals.user;
 ### 6.1 Scenariusze testowe
 
 #### 6.1.1 Rejestracja
+
 - ✅ Rejestracja z poprawnymi danymi
 - ✅ Rejestracja z istniejącym emailem (błąd)
 - ✅ Rejestracja z nieprawidłowym formatem email (walidacja)
@@ -716,6 +768,7 @@ const user = Astro.locals.user;
 - ✅ Rejestracja z niezgodnymi hasłami (walidacja)
 
 #### 6.1.2 Logowanie
+
 - ✅ Logowanie z poprawnymi danymi
 - ✅ Logowanie z nieprawidłowym hasłem (błąd)
 - ✅ Logowanie z nieistniejącym emailem (błąd)
@@ -723,6 +776,7 @@ const user = Astro.locals.user;
 - ✅ Rate limiting (zbyt wiele prób)
 
 #### 6.1.3 Reset hasła
+
 - ✅ Reset z istniejącym emailem (sukces)
 - ✅ Reset z nieistniejącym emailem (neutralna odpowiedź)
 - ✅ Ustawienie nowego hasła z poprawnym tokenem
@@ -730,17 +784,20 @@ const user = Astro.locals.user;
 - ✅ Ustawienie nowego hasła z nieprawidłowym tokenem (błąd)
 
 #### 6.1.4 Ochrona dostępu
+
 - ✅ Dostęp do `/collections` bez logowania (przekierowanie na `/auth/login?redirect=/collections`)
 - ✅ Dostęp do `/collections` z logowaniem (sukces)
 - ✅ Przekierowanie po zalogowaniu na oryginalną ścieżkę (z query param `redirect`)
 
 #### 6.1.5 Zmiana hasła (US-007)
+
 - ✅ Zmiana hasła z poprawnym aktualnym hasłem
 - ✅ Zmiana hasła z nieprawidłowym aktualnym hasłem (błąd)
 - ✅ Zmiana hasła z hasłem < 8 znaków (walidacja)
 - ✅ Zmiana hasła z niezgodnymi hasłami (walidacja)
 
 #### 6.1.6 Usunięcie konta (US-008)
+
 - ✅ Usunięcie konta z potwierdzeniem (wpisanie "USUŃ" lub hasła)
 - ✅ Anulowanie usunięcia konta
 - ✅ Weryfikacja, że konto zostało trwale usunięte
@@ -749,11 +806,13 @@ const user = Astro.locals.user;
 ### 6.2 Testy jednostkowe
 
 **Komponenty**:
+
 - Testy formularzy (walidacja, submit)
 - Testy mapowania błędów
 - Testy stanu `useAuthStore`
 
 **Middleware**:
+
 - Testy pobierania sesji
 - Testy ochrony ścieżek
 - Testy przekierowań
@@ -761,6 +820,7 @@ const user = Astro.locals.user;
 ### 6.3 Testy E2E
 
 **Główny przepływ**:
+
 1. Rejestracja → Logowanie → Dostęp do chronionej strony → Wylogowanie
 2. Reset hasła → Ustawienie nowego hasła → Logowanie
 
@@ -771,6 +831,7 @@ const user = Astro.locals.user;
 ### 7.1 Dokumentacja dla developera
 
 **Pliki dokumentacyjne**:
+
 - `README.md` - instrukcje uruchomienia i konfiguracji
 - `.ai/auth-spec.md` - niniejsza specyfikacja
 - Komentarze w kodzie dla kluczowych funkcji
@@ -778,11 +839,13 @@ const user = Astro.locals.user;
 ### 7.2 Konfiguracja środowisk
 
 **Zmienne środowiskowe**:
+
 - `SUPABASE_URL` - URL instancji Supabase
 - `SUPABASE_KEY` - Anon key Supabase
 - `SUPABASE_SERVICE_ROLE_KEY` - Service role key (tylko server-side, opcjonalnie)
 
 **Pliki konfiguracyjne**:
+
 - `.env` - zmienne środowiskowe (development)
 - `.env.production` - zmienne środowiskowe (production)
 - `supabase/config.toml` - konfiguracja Supabase (lokalna)
@@ -790,6 +853,7 @@ const user = Astro.locals.user;
 ### 7.3 Monitoring i logowanie
 
 **Eventy do logowania**:
+
 - `user_registered` - rejestracja nowego użytkownika
 - `user_logged_in` - logowanie
 - `user_logged_out` - wylogowanie
@@ -798,6 +862,7 @@ const user = Astro.locals.user;
 - `authentication_failed` - nieudana próba logowania (z powodem)
 
 **Poziomy logów**:
+
 - `info`: operacje autentykacji (rejestracja, logowanie, wylogowanie)
 - `warn`: nieudane próby logowania, rate limiting
 - `error`: błędy serwera, wyjątki
@@ -809,6 +874,7 @@ const user = Astro.locals.user;
 ### 8.1 Priorytety implementacji
 
 **Faza 1 - Podstawowa autentykacja (US-001, US-002, US-004, US-005, US-006)**:
+
 1. Rozbudowa middleware o pobieranie sesji
 2. Utworzenie `LoginForm.tsx` (US-002)
 3. Utworzenie `ForgotForm.tsx` (US-006)
@@ -817,12 +883,14 @@ const user = Astro.locals.user;
 6. Testy podstawowych przepływów (rejestracja, logowanie, reset hasła, wylogowanie)
 
 **Faza 2 - Ochrona dostępu (US-003, US-004)**:
+
 1. Implementacja ochrony ścieżek w middleware
 2. Utworzenie `AuthGuard.astro`
 3. Ochrona strony `/collections` (Kolekcje reguł - US-003)
 4. Testy ochrony dostępu
 
 **Faza 3 - Ustawienia konta (US-007, US-008, US-020)**:
+
 1. Utworzenie strony `/settings` (US-020)
 2. Utworzenie `ChangePasswordForm.tsx` (US-007)
 3. Utworzenie endpointu `/api/auth/delete-account.ts` (US-008)
@@ -833,6 +901,7 @@ const user = Astro.locals.user;
 ### 8.2 Zależności
 
 **Zewnętrzne biblioteki** (już zainstalowane):
+
 - `@supabase/supabase-js` - klient Supabase
 - `zustand` - state management
 - `react-hook-form` - formularze
@@ -840,6 +909,7 @@ const user = Astro.locals.user;
 - `zod` - walidacja
 
 **Komponenty Shadcn/ui** (już zainstalowane):
+
 - `button`, `input`, `form`, `label`, `card`
 
 ### 8.3 Uwagi końcowe
@@ -873,4 +943,3 @@ W dokumencie PRD znaleziono następujące niespójności, które zostały wyjaś
 **Data utworzenia**: 2025-01-XX  
 **Wersja**: 1.1 (zaktualizowano po porównaniu z PRD)  
 **Autor**: AI Assistant
-

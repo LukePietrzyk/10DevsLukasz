@@ -28,18 +28,18 @@ Generowanie fiszek przy użyciu AI jest wyraźnie przesunięte do kolejnej fazy 
 
 Główne persony:
 
-1. Student liceum przed sprawdzianem/maturą  
-   - Czas: ok. 30 minut dziennie.  
-   - Potrzeba: szybkie tworzenie prostych fiszek z notatek, jasna lista tego, co trzeba dziś powtórzyć.  
+1. Student liceum przed sprawdzianem/maturą
+   - Czas: ok. 30 minut dziennie.
+   - Potrzeba: szybkie tworzenie prostych fiszek z notatek, jasna lista tego, co trzeba dziś powtórzyć.
    - Bariery: brak motywacji, chaos w materiałach, odkładanie nauki na później.
 
-2. Student kierunku technicznego/IT  
-   - Potrzeba: porządkowanie dużej liczby definicji, pojęć, wzorów; szybkie dodawanie fiszek.  
+2. Student kierunku technicznego/IT
+   - Potrzeba: porządkowanie dużej liczby definicji, pojęć, wzorów; szybkie dodawanie fiszek.
    - Bariery: czasochłonność ręcznego wprowadzania fiszek, brak wygodnych skrótów i ergonomii.
 
-3. Osoba pracująca ucząca się języka obcego  
-   - Czas: krótkie sesje po 10–15 minut.  
-   - Potrzeba: prosty rytm powtórek i jasne poczucie progresu.  
+3. Osoba pracująca ucząca się języka obcego
+   - Czas: krótkie sesje po 10–15 minut.
+   - Potrzeba: prosty rytm powtórek i jasne poczucie progresu.
    - Bariery: zapominanie o regularnych powtórkach, szybkie zniechęcanie się przy braku widocznych efektów.
 
 ### 1.4 Główne założenia techniczne
@@ -356,6 +356,7 @@ Tytuł: Rejestracja nowego konta
 Opis: Jako nowy użytkownik chcę móc założyć konto przy użyciu emaila i hasła, aby zapisane fiszki i powtórki były przypisane do mnie i dostępne z różnych urządzeń.
 
 Kryteria akceptacji:
+
 - Formularz rejestracji przyjmuje adres email i hasło spełniające wymagania (np. min. 8 znaków).
 - Wprowadzenie niepoprawnego emaila lub zbyt krótkiego hasła skutkuje czytelnym komunikatem walidacyjnym.
 - Po poprawnym wypełnieniu formularza tworzony jest zapis użytkownika w bazie i użytkownik jest automatycznie logowany lub przekierowany do ekranu logowania.
@@ -368,6 +369,7 @@ Tytuł: Logowanie do aplikacji
 Opis: Jako zarejestrowany użytkownik chcę zalogować się do aplikacji, aby uzyskać dostęp do moich fiszek i powtórek.
 
 Kryteria akceptacji:
+
 - Formularz logowania przyjmuje adres email i hasło.
 - Podanie niepoprawnych danych logowania skutkuje czytelnym komunikatem o błędzie bez ujawniania, co jest niepoprawne.
 - Po poprawnym logowaniu użytkownik zostaje przekierowany na dashboard/listę fiszek.
@@ -380,6 +382,7 @@ Tytuł: Kolekcje reguł
 Opis: Jako użytkownik chcę móc zapisywać i edytować zestawy reguł, aby szybko wykorzystywać sprawdzone rozwiązania w różnych projektach.
 
 Kryteria akceptacji:
+
 - Użytkownik może zapisać aktualny zestaw reguł (US-001) jako kolekcję (nazwa, opis, reguły).
 - Użytkownik może aktualizować kolekcję.
 - Użytkownik może usunąć kolekcję.
@@ -393,6 +396,7 @@ Tytuł: Bezpieczny dostęp
 Opis: Jako użytkownik chcę mieć możliwość rejestracji i logowania się do systemu w sposób zapewniający bezpieczeństwo moich danych.
 
 Kryteria akceptacji:
+
 - Logowanie i rejestracja odbywają się na dedykowanych stronach.
 - Logowanie wymaga podania adresu email i hasła.
 - Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
@@ -410,6 +414,7 @@ Tytuł: Wylogowanie z aplikacji
 Opis: Jako zalogowany użytkownik chcę móc się wylogować, aby nikt inny nie miał dostępu do moich danych na wspólnym urządzeniu.
 
 Kryteria akceptacji:
+
 - Z poziomu nawigacji dostępna jest akcja „Wyloguj".
 - Po wylogowaniu sesja jest unieważniana (tokeny usuwane).
 - Użytkownik jest przekierowany na stronę logowania lub ekran powitalny.
@@ -421,6 +426,7 @@ Tytuł: Reset zapomnianego hasła
 Opis: Jako użytkownik, który zapomniał hasła, chcę otrzymać mail z linkiem do ustawienia nowego hasła, aby odzyskać dostęp do konta.
 
 Kryteria akceptacji:
+
 - Na ekranie logowania dostępny jest link „Zapomniałem hasła".
 - Po podaniu zarejestrowanego emaila wysyłany jest mail z linkiem resetującym hasło.
 - Kliknięcie w link prowadzi do formularza ustawienia nowego hasła.
@@ -434,6 +440,7 @@ Tytuł: Zmiana hasła w ustawieniach konta
 Opis: Jako zalogowany użytkownik chcę móc zmienić swoje hasło, aby zwiększyć bezpieczeństwo konta.
 
 Kryteria akceptacji:
+
 - W ustawieniach konta dostępny jest formularz zmiany hasła.
 - Formularz wymaga podania aktualnego hasła oraz nowego hasła (z walidacją).
 - Podanie niepoprawnego aktualnego hasła skutkuje błędem.
@@ -446,6 +453,7 @@ Tytuł: Usunięcie konta
 Opis: Jako zalogowany użytkownik chcę móc trwale usunąć swoje konto i wszystkie dane (fiszki, powtórki), aby mieć kontrolę nad swoją prywatnością.
 
 Kryteria akceptacji:
+
 - W ustawieniach konta dostępna jest opcja „Usuń konto".
 - Po jej wybraniu pojawia się modal z ostrzeżeniem o nieodwracalnym usunięciu.
 - Do potwierdzenia wymagane jest wpisanie określonego słowa (np. „USUŃ") lub hasła.
@@ -459,6 +467,7 @@ Tytuł: Przeglądanie własnych fiszek
 Opis: Jako zalogowany użytkownik chcę widzieć listę wszystkich moich fiszek, aby móc je przeglądać i zarządzać nimi.
 
 Kryteria akceptacji:
+
 - Dashboard po zalogowaniu wyświetla listę fiszek użytkownika w postaci tabeli/listy.
 - Dla każdej fiszki widoczne są co najmniej: front (cały lub skrócony), fragment back, subject (jeśli ustawiony).
 - Lista jest paginowana (50 fiszek na stronę), z przyciskami do przechodzenia między stronami.
@@ -471,6 +480,7 @@ Tytuł: Wyszukiwanie fiszek
 Opis: Jako użytkownik z większą liczbą fiszek chcę móc wyszukać fiszki po tekście front lub back, aby szybko znaleźć interesującą mnie kartę.
 
 Kryteria akceptacji:
+
 - Na liście fiszek dostępne jest pole „Szukaj".
 - Wpisanie frazy filtruje listę fiszek po dopasowaniu do front lub back.
 - Wyczyśczenie pola wyszukiwania przywraca pełną listę (z paginacją).
@@ -483,6 +493,7 @@ Tytuł: Ręczne tworzenie fiszki
 Opis: Jako użytkownik chcę łatwo dodać nową fiszkę z pytaniem i odpowiedzią, aby budować swój zestaw do nauki.
 
 Kryteria akceptacji:
+
 - Na liście fiszek dostępny jest przycisk „Dodaj fiszkę".
 - Kliknięcie otwiera formularz z polami front, back oraz opcjonalnie subject.
 - Próba zapisu z pustym front lub back zwraca czytelny komunikat walidacyjny.
@@ -496,6 +507,7 @@ Tytuł: Edycja fiszki
 Opis: Jako użytkownik chcę móc zmodyfikować treść istniejącej fiszki, aby poprawić błędy lub doprecyzować pytanie/odpowiedź.
 
 Kryteria akceptacji:
+
 - Z listy fiszek dostępna jest akcja „Edytuj" dla każdej fiszki.
 - Formularz edycji wyświetla aktualny front, back, subject.
 - Zastosowane są te same walidacje co przy tworzeniu (brak pustych pól, limity długości).
@@ -508,6 +520,7 @@ Tytuł: Usunięcie fiszki
 Opis: Jako użytkownik chcę móc usunąć niepotrzebną lub błędną fiszkę, aby utrzymać porządek w swoim zbiorze.
 
 Kryteria akceptacji:
+
 - Z listy fiszek dostępna jest akcja „Usuń" dla każdej fiszki.
 - Po kliknięciu pojawia się modal potwierdzający zamiar usunięcia.
 - Wybranie opcji „Usuń" usuwa fiszkę trwale z bazy.
@@ -520,6 +533,7 @@ Tytuł: Lista powtórek na dziś
 Opis: Jako użytkownik chcę mieć osobny ekran pokazujący fiszki, które powinienem dziś powtórzyć, aby mieć jasny plan nauki.
 
 Kryteria akceptacji:
+
 - Z nawigacji dostępny jest link do ekranu „Powtórki na dziś".
 - Ekran pobiera z bazy fiszki, dla których nextReviewAt ≤ dziś (wg czasu serwera).
 - Jeśli liczba fiszek przekracza 100, wyświetlane jest maksymalnie 100 na daną sesję.
@@ -532,6 +546,7 @@ Tytuł: Powtórka pojedynczej fiszki
 Opis: Jako użytkownik chcę w sesji powtórek widzieć najpierw pytanie, a dopiero po kliknięciu odpowiedź, aby móc sprawdzić swoją wiedzę.
 
 Kryteria akceptacji:
+
 - Podczas sesji powtórek pierwszym ekranem dla każdej fiszki jest front (pytanie/hasło).
 - Kliknięcie przycisku lub naciśnięcie klawisza (np. Space) odsłania back (odpowiedź).
 - Do momentu odsłonięcia odpowiedzi nie są widoczne przyciski oceny trudności lub są nieaktywne.
@@ -543,6 +558,7 @@ Tytuł: Ocenianie trudności odpowiedzi
 Opis: Jako użytkownik chcę po odsłonięciu odpowiedzi oznaczyć, czy dana fiszka była dla mnie trudna, średnia czy łatwa, aby system dobrał kolejną datę powtórki.
 
 Kryteria akceptacji:
+
 - Po odsłonięciu odpowiedzi dostępne są trzy opcje (przyciski lub klawisze): trudne, średnie, łatwe (np. 1/2/3).
 - Wybranie jednej z opcji:
   - zapisuje wynik w historii powtórek (np. w polu pomocniczym lub osobnej tabeli),
@@ -557,6 +573,7 @@ Tytuł: Licznik powtórek w sesji
 Opis: Jako użytkownik chcę podczas sesji widzieć, ile fiszek już powtórzyłem, a ile zostało, aby mieć poczucie postępu.
 
 Kryteria akceptacji:
+
 - Na ekranie powtórek wyświetlany jest licznik X/Y, gdzie:
   - X to liczba fiszek już ocenionych w bieżącej sesji,
   - Y to całkowita liczba fiszek do powtórki na dziś (maks. 100).
@@ -570,6 +587,7 @@ Tytuł: Bezpieczny zapis fiszek przy błędach sieci
 Opis: Jako użytkownik chcę, aby przy problemach z połączeniem czy serwerem moje wpisane dane nie znikały, abym nie musiał wszystkiego wprowadzać ponownie.
 
 Kryteria akceptacji:
+
 - W razie błędu HTTP (np. 500, timeout) przy zapisie fiszki użytkownik otrzymuje jasny komunikat o błędzie.
 - Dane wpisane w formularz pozostają w polach po wystąpieniu błędu.
 - Użytkownik może ponowić próbę zapisu jednym kliknięciem.
@@ -581,6 +599,7 @@ Tytuł: Informowanie o trybie offline
 Opis: Jako użytkownik chcę zostać poinformowany, gdy stracę połączenie z internetem podczas pracy z aplikacją, aby zrozumieć, czemu zapisy nie działają.
 
 Kryteria akceptacji:
+
 - Aplikacja wykrywa brak połączenia (o ile jest to technicznie możliwe) i wyświetla stosowny komunikat.
 - Podczas braku połączenia blokowane są akcje wymagające komunikacji z serwerem (z czytelnym komunikatem).
 - Po odzyskaniu połączenia komunikat znika lub jest aktualizowany, a operacje mogą być ponawiane.
@@ -592,6 +611,7 @@ Tytuł: Ustawienia konta
 Opis: Jako zalogowany użytkownik chcę mieć ekran ustawień konta, na którym mogę zmienić hasło i ewentualnie usunąć konto.
 
 Kryteria akceptacji:
+
 - Ekran ustawień zawiera sekcję zmiany hasła (US-007) i sekcję usunięcia konta (US-008).
 - Dane dostępowe (email) są wyświetlane w formie tylko do odczytu (bez zmiany w MVP).
 - Próby wejścia na ekran ustawień bez zalogowania przekierowują na ekran logowania.
@@ -603,6 +623,7 @@ Tytuł: FAQ i kontakt
 Opis: Jako użytkownik chcę mieć możliwość szybkiego sprawdzenia odpowiedzi na podstawowe pytania oraz zgłoszenia błędu lub sugestii, aby w razie problemów nie blokować się na dalszej nauce.
 
 Kryteria akceptacji:
+
 - Dostępna jest sekcja „Pomoc"/„FAQ" z kilkoma najczęstszymi pytaniami (np. jak dodać fiszkę, jak działa powtórka).
 - Na tej samej stronie lub w widocznym miejscu znajduje się link „Zgłoś błąd/feedback".
 - Link prowadzi do otwarcia klienta mailowego lub prostego formularza kontaktowego kierującego zgłoszenie na skonfigurowany adres email.
@@ -651,5 +672,3 @@ Choć AI nie jest częścią MVP, już teraz definiuje się docelowe metryki, kt
   - Cel: 75 procent lub więcej.
 
 Do liczenia tych metryk w przyszłości wykorzystane zostaną eventy ai_generate_requested, ai_cards_received, ai_card_saved, ai_card_rejected oraz pola source i aiBatchId w modelu danych.
-
-

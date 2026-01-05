@@ -2,10 +2,11 @@
 
 ## Zrealizowane kroki
 
-### ✅ Krok 1: Utworzenie routingu dla widoków autoryzacji (/auth/*)
+### ✅ Krok 1: Utworzenie routingu dla widoków autoryzacji (/auth/\*)
+
 - **Utworzono 4 strony Astro:**
   - `src/pages/auth/register.astro` - strona rejestracji
-  - `src/pages/auth/login.astro` - strona logowania  
+  - `src/pages/auth/login.astro` - strona logowania
   - `src/pages/auth/forgot.astro` - strona resetowania hasła
   - `src/pages/auth/reset.astro` - strona ustawiania nowego hasła
 - **Każda strona zawiera:**
@@ -15,6 +16,7 @@
   - Skrypt do montowania komponentu React w DOM
 
 ### ✅ Krok 2: Implementacja useAuthStore z Zustand
+
 - **Utworzono `src/lib/stores/auth.store.ts` z pełną funkcjonalnością:**
   - Interface `AuthState` z wszystkimi wymaganymi polami i metodami
   - Metody autoryzacji: `login`, `register`, `logout`, `resetPassword`, `updatePassword`
@@ -29,6 +31,7 @@
   - Obsługa różnych scenariuszy (niepotwierdzone konto, rate limiting, itp.)
 
 ### ✅ Krok 3: Zainstalowanie zależności i komponentów UI
+
 - **Zainstalowane pakiety NPM:**
   - `@supabase/supabase-js` - klient Supabase
   - `react-hook-form` - zarządzanie formularzami
@@ -40,6 +43,7 @@
   - Wszystkie komponenty gotowe do użycia w formularzach
 
 ### ✅ Krok 4: Rozpoczęcie implementacji formularzy autoryzacji
+
 - **Utworzono `src/components/auth/RegisterForm.tsx`:**
   - Pełny formularz rejestracji z walidacją Zod
   - React Hook Form z resolverem zodResolver
@@ -53,6 +57,7 @@
 ## Kolejne kroki
 
 ### 🔄 Krok 5: Dokończenie pozostałych formularzy autoryzacji
+
 - Utworzenie `src/components/auth/LoginForm.tsx`
   - Pola: email, password
   - Walidacja Zod, integracja z useAuthStore
@@ -67,17 +72,20 @@
   - Wywołanie `updatePassword` z store
 
 ### 🔄 Krok 6: Utworzenie routingu dla widoku generowania (/flashcards/generate)
+
 - Utworzenie `src/pages/flashcards/generate.astro`
 - Implementacja dwukolumnowego layoutu (SourceForm + ProposalsPanel)
 - Przygotowanie miejsca na komponenty React
 
 ### 🔄 Krok 7: Implementacja useGenerateStore z Zustand
+
 - Utworzenie `src/lib/stores/generate.store.ts`
 - Interface `GenerateState` z metodami: `generate`, `toggleSelect`, `saveSelected`, `reset`
 - Integracja z API endpoints `/api/flashcards/generate` i `/api/flashcards/batch`
 - Zarządzanie stanem: `loading`, `proposals`, `selectedIds`
 
 ### 🔄 Krok 8: Implementacja komponentów generowania fiszek
+
 - Utworzenie `src/components/generate/SourceForm.tsx`
   - Textarea dla materiału źródłowego
   - Select dla subject, Input dla maxCards
@@ -91,11 +99,13 @@
   - Przycisk zapisu batch
 
 ### 🔄 Krok 9: Dodanie obsługi błędów i toastów
+
 - Implementacja globalnych toastów dla success/error
 - Obsługa błędów API (400/422 walidacja, 500 serwer, 409 limit)
 - Komunikaty użytkownika w języku polskim
 
 ### 🔄 Krok 10: Testy i finalizacja
+
 - Testy jednostkowe store'ów (toggle, batch body)
 - Test E2E: generate → select → save → redirect list
 - Testy formularzy autoryzacji
