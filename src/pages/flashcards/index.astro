@@ -6,6 +6,7 @@ export const prerender = false;
 ---
 
 <Layout title="Lista fiszek - Flashcards">
-  <FlashcardListProvider client:load />
+  <div data-testid="flashcards-page">
+    <FlashcardListProvider client:load />
+  </div>
 </Layout>
-

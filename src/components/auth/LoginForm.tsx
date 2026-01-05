@@ -54,14 +54,14 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
 
   return (
     <>
-      <Card className="w-full bg-white border-[#E2E8F0] shadow-lg">
+      <Card className="w-full bg-white border-[#E2E8F0] shadow-lg" data-testid="login-card">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Zaloguj się</CardTitle>
           <CardDescription className="text-center">Wprowadź swoje dane, aby zalogować się do konta</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" data-testid="login-form">
               <FormField
                 control={form.control}
                 name="email"
@@ -69,7 +69,13 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
                   <FormItem>
                     <FormLabel>E-mail</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="twoj@email.com" {...field} disabled={loading} />
+                      <Input
+                        type="email"
+                        placeholder="twoj@email.com"
+                        {...field}
+                        disabled={loading}
+                        data-testid="login-email-input"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -83,7 +89,13 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
                   <FormItem>
                     <FormLabel>Hasło</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Wprowadź hasło" {...field} disabled={loading} />
+                      <Input
+                        type="password"
+                        placeholder="Wprowadź hasło"
+                        {...field}
+                        disabled={loading}
+                        data-testid="login-password-input"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -91,12 +103,17 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
               />
 
               {error && (
-                <div className="rounded-md bg-destructive/15 p-3">
+                <div className="rounded-md bg-destructive/15 p-3" data-testid="login-error-message">
                   <p className="text-sm text-destructive">{error}</p>
                 </div>
               )}
 
-              <Button type="submit" className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-white" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-white"
+                disabled={loading}
+                data-testid="login-submit-button"
+              >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Zaloguj się
               </Button>

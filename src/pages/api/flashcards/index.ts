@@ -23,6 +23,16 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ locals, url }) => {
   try {
+    // Require authentication
+    if (!locals.userId) {
+      return locals.createErrorResponse(
+        401,
+        "unauthorized",
+        "Unauthorized",
+        "User authentication required. Please log in to access flashcards."
+      );
+    }
+
     const flashcardService = new FlashcardService(locals.supabase, locals.userId);
 
     // Parse and validate query parameters
