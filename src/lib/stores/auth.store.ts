@@ -208,14 +208,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true });
 
     try {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        throw error;
-      }
-
-      set({ user: null, loading: false, error: null });
-      window.location.href = "/auth/login";
+      // Redirect to server-side logout endpoint
+      // This ensures cookies are properly cleared on the server
+      window.location.href = "/auth/logout";
     } catch (error) {
       const authError = error as AuthError;
       set({

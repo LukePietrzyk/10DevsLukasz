@@ -1,0 +1,35 @@
+---
+/**
+ * Logout page - clears user session and redirects to login
+ */
+export const prerender = false;
+
+// Clear the session
+const { error } = await Astro.locals.supabase.auth.signOut();
+
+if (error) {
+  console.error("Error signing out:", error);
+}
+
+// Clear Supabase auth cookies
+// Supabase uses cookies with pattern: sb-{project-ref}-auth-token
+const cookies = Astro.cookies;
+
+// Known Supabase cookie names for local development
+const supabaseCookies = [
+  "sb-127-auth-token",
+  "sb-127.0.0.1-auth-token",
+  "sb-localhost-auth-token",
+  "sb-127-auth-token-code-verifier",
+  "sb-127.0.0.1-auth-token-code-verifier",
+  "sb-localhost-auth-token-code-verifier",
+];
+
+// Delete each known Supabase cookie
+for (const cookieName of supabaseCookies) {
+  cookies.delete(cookieName, { path: "/" });
+}
+
+// Redirect to login page
+return Astro.redirect("/auth/login", 302);
+---
