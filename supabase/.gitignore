@@ -1,0 +1,26 @@
+# Supabase
+.branches
+.temp
+
+# Environment variables and sensitive configuration
+.env
+.env.*
+.env.local
+env.local
+*.env
+*.env.local
+.env.keys
+.env.*.local
+.env.production
+.env.development
+
+# API keys and secrets
+*.key
+*.pem
+*.secret
+secrets.json
+config.local.*
+
+# Database credentials
+db.credentials.*
+database.local.*
