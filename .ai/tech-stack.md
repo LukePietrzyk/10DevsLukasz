@@ -17,5 +17,23 @@ Dostęp do szerokiej gamy modeli (OpenAI, Anthropic, Google i wiele innych), kt�
 Pozwala na ustawianie limitów finansowych na klucze API
 CI/CD i Hosting:
 
-Github Actions do tworzenia pipeline’ów CI/CD
+Github Actions do tworzenia pipeline'ów CI/CD
 DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
+Testowanie - Kompleksowe narzędzia do zapewnienia jakości kodu:
+
+Testy jednostkowe - Vitest z React Testing Library:
+Vitest jako szybki i wydajny framework testowy dla komponentów React, serwisów i funkcji pomocniczych
+React Testing Library do testowania komponentów z perspektywy użytkownika, z naciskiem na dostępność
+@testing-library/jest-dom dla dodatkowych matcherów DOM
+@testing-library/user-event do symulacji interakcji użytkownika
+Testy end-to-end - Playwright do testowania pełnych przepływów użytkownika:
+Automatyczne uruchamianie serwera deweloperskiego podczas testów
+Screenshots i videos przy błędach dla łatwego debugowania
+Trace viewer do szczegółowej analizy wykonania testów
+Page Object Model dla lepszej organizacji i utrzymania testów
+Dodatkowe narzędzia testowe:
+MSW (Mock Service Worker) do mockowania API w testach jednostkowych
+Supertest do testowania API endpoints
+k6 do testów wydajnościowych i obciążeniowych
+Lighthouse do analizy wydajności frontendu
+axe-core do testów dostępności (a11y)
