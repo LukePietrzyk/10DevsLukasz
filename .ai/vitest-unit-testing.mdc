@@ -1,0 +1,18 @@
+---
+alwaysApply: false
+---
+
+## TESTING
+
+### Guidelines for UNIT
+
+#### VITEST
+
+- Leverage the `vi` object for mocks and spies
+- Use the setup files for global test configuration
+- Leverage the inline snapshot feature for small snapshots
+- Implement coverage reporting with `@vitest/coverage-v8` integration
+- Use the watch mode for development
+- Leverage the UI mode for interactive test exploration
+- Implement mocking for modules and dependencies
+- Use `jsdom` for DOM testing environment
