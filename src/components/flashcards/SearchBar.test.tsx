@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@/test/utils";
-import userEvent from "@testing-library/user-event";
+import { render, screen, fireEvent } from "@/test/utils";
 import { SearchBar } from "./SearchBar";
 
 describe("SearchBar", () => {
@@ -9,6 +8,7 @@ describe("SearchBar", () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -36,13 +36,13 @@ describe("SearchBar", () => {
     expect(input.value).toBe("test query");
   });
 
-  it("should call onChange after debounce delay", async () => {
-    const user = userEvent.setup({ delay: null });
+  it("should call onChange after debounce delay", () => {
     const mockOnChange = vi.fn();
     render(<SearchBar value="" onChange={mockOnChange} debounceMs={300} />);
 
     const input = screen.getByPlaceholderText("Szukaj fiszek...");
-    await user.type(input, "test");
+
+    fireEvent.change(input, { target: { value: "test" } });
 
     // onChange should not be called immediately
     expect(mockOnChange).not.toHaveBeenCalled();
@@ -71,24 +71,27 @@ describe("SearchBar", () => {
   });
 
   it("should clear value when clear button is clicked", async () => {
-    const user = userEvent.setup({ delay: null });
     const mockOnChange = vi.fn();
     render(<SearchBar value="test" onChange={mockOnChange} />);
 
     const clearButton = screen.getByLabelText("Wyczyść wyszukiwanie");
-    await user.click(clearButton);
+
+    fireEvent.click(clearButton);
 
     // onChange should be called immediately with empty string
     expect(mockOnChange).toHaveBeenCalledWith("");
   });
 
-  it("should debounce multiple rapid changes", async () => {
-    const user = userEvent.setup({ delay: null });
+  it("should debounce multiple rapid changes", () => {
     const mockOnChange = vi.fn();
     render(<SearchBar value="" onChange={mockOnChange} debounceMs={300} />);
 
     const input = screen.getByPlaceholderText("Szukaj fiszek...");
-    await user.type(input, "abc");
+
+    // Simulate rapid typing
+    fireEvent.change(input, { target: { value: "a" } });
+    fireEvent.change(input, { target: { value: "ab" } });
+    fireEvent.change(input, { target: { value: "abc" } });
 
     // Fast-forward time by 200ms (less than debounce delay)
     vi.advanceTimersByTime(200);
@@ -96,6 +99,7 @@ describe("SearchBar", () => {
 
     // Fast-forward remaining time
     vi.advanceTimersByTime(100);
+
     expect(mockOnChange).toHaveBeenCalledTimes(1);
     expect(mockOnChange).toHaveBeenCalledWith("abc");
   });
