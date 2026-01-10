@@ -33,6 +33,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
 
       if (error) {
+        // Log the error for debugging
+        if (import.meta.env.DEV) {
+          console.error("[Auth Store] Supabase signInWithPassword error:", error);
+          console.error("[Auth Store] Error message:", error.message);
+        }
+        // Throw the error immediately - don't proceed with session sync
         throw error;
       }
 
@@ -153,12 +159,27 @@ export const useAuthStore = create<AuthState>((set) => ({
       const authError = error as AuthError | Error;
       let errorMessage = "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.";
 
-      if (authError && typeof authError === "object" && "message" in authError) {
-        errorMessage = mapAuthError(authError as AuthError);
+      // Prioritize Supabase auth errors over network/fetch errors
+      // Supabase AuthError has a message property that should be checked first
+      if (authError && typeof authError === "object") {
+        // Check if it's a Supabase AuthError (has message and potentially status)
+        if ("message" in authError) {
+          errorMessage = mapAuthError(authError as AuthError);
+        } else if (error instanceof Error) {
+          errorMessage = mapAuthError(error);
+        } else {
+          errorMessage = mapAuthError(authError as Error);
+        }
+      } else if (error instanceof Error) {
+        errorMessage = mapAuthError(error);
+      } else {
+        errorMessage = mapAuthError(new Error(String(error)));
       }
 
       if (import.meta.env.DEV) {
         console.error("[Auth Store] Login error:", error);
+        console.error("[Auth Store] Error type:", typeof error);
+        console.error("[Auth Store] Error message:", errorMessage);
       }
 
       set({
@@ -290,9 +311,26 @@ export const useAuthStore = create<AuthState>((set) => ({
 
 // Helper function to map Supabase auth errors to user-friendly Polish messages
 function mapAuthError(error: AuthError | Error): string {
-  const message = error instanceof Error ? error.message : String(error);
+  // Extract message from error - Supabase AuthError has a message property
+  let message: string;
 
-  switch (message) {
+  if (error && typeof error === "object") {
+    // Check if it's a Supabase AuthError with message property
+    if ("message" in error && typeof error.message === "string") {
+      message = error.message;
+    } else if (error instanceof Error) {
+      message = error.message;
+    } else {
+      message = String(error);
+    }
+  } else {
+    message = String(error);
+  }
+
+  // Normalize message for comparison (case-insensitive, trim whitespace)
+  const normalizedMessage = message.trim();
+
+  switch (normalizedMessage) {
     case "Invalid login credentials":
       return "Nieprawidłowy e-mail lub hasło.";
     case "Email not confirmed":
@@ -312,6 +350,13 @@ function mapAuthError(error: AuthError | Error): string {
     case "Failed to verify session after sync":
       return "Nie udało się zweryfikować sesji. Spróbuj ponownie.";
     default:
+      // For network errors (like "Failed to fetch"), check if we have a Supabase error
+      // If it's a network error during login, it might be masking the real auth error
+      if (normalizedMessage === "Failed to fetch" || normalizedMessage.toLowerCase().includes("network")) {
+        // This might be a network error masking the real auth error
+        // Return a more user-friendly message
+        return "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.";
+      }
       return message || "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.";
   }
 }
