@@ -34,7 +34,7 @@ describe("SkeletonLoader", () => {
     const { container } = render(<SkeletonLoader isMobile={true} />);
 
     // Mobile view should have 5 skeleton cards
-    const cards = container.querySelectorAll('[class*="Card"]');
+    const cards = container.querySelectorAll('[data-slot="card"]');
     expect(cards.length).toBe(5);
   });
 });
