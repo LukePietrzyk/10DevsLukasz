@@ -67,3 +67,10 @@ $RECYCLE.BIN/
 
 # environment definitions
 src/env.d.ts
+
+# test results
+test-results/
+playwright-report/
+coverage/
+.nyc_output/
+vitest.config.ts.timestamp-*

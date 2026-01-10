@@ -2,6 +2,7 @@ import type { FlashcardEntity } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import { Pencil, Trash2 } from "lucide-react";
 
 interface FlashcardCardProps {
@@ -23,10 +24,14 @@ export function FlashcardCard({ flashcard, onEdit, onDelete }: FlashcardCardProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base line-clamp-2">{flashcard.front}</CardTitle>
+        <CardTitle className="text-base line-clamp-2">
+          <MarkdownContent content={flashcard.front} size="sm" className="line-clamp-2" />
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        <p className="text-sm text-muted-foreground line-clamp-3">{flashcard.back}</p>
+        <div className="text-sm text-muted-foreground line-clamp-3">
+          <MarkdownContent content={flashcard.back} size="sm" />
+        </div>
         <div className="flex items-center justify-between">
           {flashcard.subject ? (
             <Badge variant="secondary">{flashcard.subject}</Badge>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import type { FlashcardProposalDto } from "@/types";
 
 interface FlashcardPreviewProps {
@@ -140,7 +141,9 @@ const FlashcardPreview: React.FC<FlashcardPreviewProps> = ({
                       Przód
                     </span>
                   </div>
-                  <div className="text-center text-2xl font-medium leading-relaxed px-4">{currentCard.front}</div>
+                  <div className="text-center px-4">
+                    <MarkdownContent content={currentCard.front} size="2xl" className="text-center" />
+                  </div>
                   {currentCard.subject && (
                     <div className="text-center">
                       <span className="inline-block px-4 py-2 bg-secondary text-secondary-foreground text-sm rounded-md">
@@ -164,7 +167,9 @@ const FlashcardPreview: React.FC<FlashcardPreviewProps> = ({
                       Tył
                     </span>
                   </div>
-                  <div className="text-center text-xl leading-relaxed px-4">{currentCard.back}</div>
+                  <div className="text-center px-4">
+                    <MarkdownContent content={currentCard.back} size="xl" className="text-center" />
+                  </div>
                   {currentCard.source && (
                     <div className="text-center">
                       <span className="inline-block px-4 py-2 bg-muted text-muted-foreground text-sm rounded-md">

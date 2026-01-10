@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit3, RotateCcw, Check, X } from "lucide-react";
+import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import { useGenerateStore } from "@/lib/stores/generate.store";
 import type { FlashcardProposalDto } from "@/types";
 
@@ -148,7 +149,9 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, index, isSelected
             >
               <div className="space-y-3">
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Przód</div>
-                <div className="text-sm leading-relaxed line-clamp-3">{proposal.front}</div>
+                <div className="line-clamp-3">
+                  <MarkdownContent content={proposal.front} size="sm" />
+                </div>
                 {proposal.subject && (
                   <div className="inline-block px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded-md">
                     {proposal.subject}
@@ -163,7 +166,9 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, index, isSelected
             >
               <div className="space-y-3">
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Tył</div>
-                <div className="text-sm leading-relaxed line-clamp-3">{proposal.back}</div>
+                <div className="line-clamp-3">
+                  <MarkdownContent content={proposal.back} size="sm" />
+                </div>
                 {proposal.source && (
                   <div className="inline-block px-2 py-1 bg-muted text-muted-foreground text-xs rounded-md">
                     {proposal.source === "ai-full" ? "Wygenerowane przez AI" : proposal.source}

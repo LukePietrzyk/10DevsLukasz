@@ -2,6 +2,7 @@ import type { FlashcardEntity } from "@/types";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import { Pencil, Trash2 } from "lucide-react";
 
 interface FlashcardTableRowProps {
@@ -24,12 +25,16 @@ export function FlashcardTableRow({ flashcard, onEdit, onDelete }: FlashcardTabl
     <TableRow>
       <TableCell className="max-w-[300px]">
         <div className="truncate" title={flashcard.front}>
-          {flashcard.front}
+          <MarkdownContent content={flashcard.front} size="sm" className="truncate" />
         </div>
       </TableCell>
       <TableCell className="max-w-[300px]">
         <div className="truncate" title={flashcard.back}>
-          {flashcard.back.length > 50 ? `${flashcard.back.substring(0, 50)}...` : flashcard.back}
+          <MarkdownContent
+            content={flashcard.back.length > 50 ? `${flashcard.back.substring(0, 50)}...` : flashcard.back}
+            size="sm"
+            className="truncate"
+          />
         </div>
       </TableCell>
       <TableCell>
