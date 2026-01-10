@@ -25,6 +25,9 @@ env.local
 .env.test
 .env.staging
 
+# Allow .env.example to be committed (it's a template file)
+!.env.example
+
 # API keys and secrets
 *.key
 *.pem
