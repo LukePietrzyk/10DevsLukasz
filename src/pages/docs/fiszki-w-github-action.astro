@@ -1,0 +1,156 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MarkdownContent from "../../components/ui/MarkdownContent";
+
+const markdownContent = `# Fiszki w GitHub Actions
+
+## Wprowadzenie
+
+Ten dokument opisuje integrację systemu fiszek z GitHub Actions, umożliwiając automatyzację procesów związanych z zarządzaniem i przetwarzaniem fiszek w projekcie.
+
+## Przegląd
+
+GitHub Actions pozwala na automatyzację różnych zadań związanych z fiszkami, takich jak:
+
+- Automatyczne generowanie fiszek z materiałów źródłowych
+- Synchronizacja fiszek między repozytoriami
+- Walidacja i testowanie struktury fiszek
+- Automatyczne aktualizacje i migracje danych
+
+## Konfiguracja
+
+### Podstawowy workflow
+
+Aby rozpocząć pracę z fiszkami w GitHub Actions, utwórz plik workflow w katalogu \`.github/workflows/\`:
+
+\`\`\`yaml
+name: Fiszki Workflow
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  process-flashcards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Process flashcards
+        run: npm run process-flashcards
+\`\`\`
+
+## Zmienne środowiskowe
+
+Aby workflow mógł działać z bazą danych Supabase, należy skonfigurować sekrety w GitHub:
+
+1. Przejdź do **Settings** → **Secrets and variables** → **Actions**
+2. Dodaj następujące sekrety:
+   - \`SUPABASE_URL\` - URL instancji Supabase
+   - \`SUPABASE_ANON_KEY\` - Klucz anonimowy Supabase
+   - \`SUPABASE_SERVICE_ROLE_KEY\` - Klucz service role (dla operacji administracyjnych)
+
+### Przykład użycia sekretów
+
+\`\`\`yaml
+- name: Process flashcards with Supabase
+  env:
+    SUPABASE_URL: \${{ secrets.SUPABASE_URL }}
+    SUPABASE_ANON_KEY: \${{ secrets.SUPABASE_ANON_KEY }}
+    SUPABASE_SERVICE_ROLE_KEY: \${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  run: npm run process-flashcards
+\`\`\`
+
+## Typowe przypadki użycia
+
+### 1. Automatyczne generowanie fiszek
+
+Workflow może automatycznie generować fiszki z materiałów źródłowych przy każdym pushu:
+
+\`\`\`yaml
+- name: Generate flashcards from source
+  run: |
+    npm run generate-flashcards -- --source ./materials --output ./flashcards
+\`\`\`
+
+### 2. Walidacja struktury fiszek
+
+Przed mergem można zweryfikować poprawność struktury fiszek:
+
+\`\`\`yaml
+- name: Validate flashcards
+  run: npm run validate-flashcards
+\`\`\`
+
+### 3. Testy jednostkowe i E2E
+
+Automatyczne uruchamianie testów dla komponentów związanych z fiszkami:
+
+\`\`\`yaml
+- name: Run unit tests
+  run: npm run test
+  
+- name: Run E2E tests
+  run: npm run test:e2e
+\`\`\`
+
+## Best practices
+
+1. **Bezpieczeństwo**: Nigdy nie loguj sekretów w outputach workflow
+2. **Wydajność**: Używaj cache dla zależności Node.js
+3. **Monitoring**: Dodaj powiadomienia o statusie workflow
+4. **Idempotencja**: Upewnij się, że operacje są idempotentne
+
+## Przykładowy workflow z cache
+
+\`\`\`yaml
+- name: Cache node modules
+  uses: actions/cache@v3
+  with:
+    path: ~/.npm
+    key: \${{ runner.os }}-node-\${{ hashFiles('**/package-lock.json') }}
+    
+- name: Install dependencies
+  run: npm ci
+\`\`\`
+
+## Troubleshooting
+
+### Problem: Workflow nie może połączyć się z Supabase
+
+**Rozwiązanie**: Sprawdź, czy wszystkie wymagane sekrety są poprawnie skonfigurowane i czy URL Supabase jest prawidłowy.
+
+### Problem: Błędy autoryzacji
+
+**Rozwiązanie**: Upewnij się, że używasz odpowiedniego klucza (service role key dla operacji administracyjnych).
+
+## Dodatkowe zasoby
+
+- [Dokumentacja GitHub Actions](https://docs.github.com/en/actions)
+- [Dokumentacja Supabase](https://supabase.com/docs)
+- [Dokumentacja projektu](./README.md)
+`;
+---
+
+<Layout title="Fiszki w GitHub Actions - Dokumentacja">
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <MarkdownContent content={markdownContent} size="lg" />
+  </div>
+</Layout>
+
+<style>
+  .container {
+    min-height: calc(100vh - 200px);
+  }
+</style>
